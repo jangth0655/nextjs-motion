@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model User { 
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email String @unique
+  username String @unique
+  avatar String?
+  tokens Token[] 
+  posts Post[]
+  answers Answer[]
+  likes Like[]
+}
+
+model Token { 
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  payload String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+}
+
+model Post { 
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  comment String @db.MediumText
+  answers Answer[]
+  likes Like[]
+}
+
+model Answer {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  answer String @db.MediumText
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+}
+
+model Like { 
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+}
