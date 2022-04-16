@@ -41,6 +41,7 @@ model Post {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
   comment String @db.MediumText
+  image String?
   answers Answer[]
   likes Like[]
 }

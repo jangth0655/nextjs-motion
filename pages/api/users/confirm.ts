@@ -10,20 +10,22 @@ const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
 ) => {
-  const { body } = req;
-  const token = await client.token.findUnique({
+  const {
+    body: { token },
+  } = req;
+  const foundToken = await client.token.findUnique({
     where: {
-      payload: body.token,
+      payload: token,
     },
     select: {
       userId: true,
     },
   });
-  if (!token) {
+  if (!foundToken) {
     return res.status(401).json({ ok: false, error: "Token not found" });
   } else {
     req.session.user = {
-      id: token.userId,
+      id: foundToken.userId,
     };
     await req.session.save();
     await client.token.deleteMany({
@@ -38,7 +40,7 @@ const handler = async (
 
 export default withSession(
   withHandler({
-    method: "POST",
+    method: ["POST"],
     handler,
     isPrivate: false,
   })
