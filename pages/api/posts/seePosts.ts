@@ -10,16 +10,46 @@ const handler = async (
   const {
     query: { page = 1 },
   } = req;
+  console.log(req.query);
+
   const pageSize = 5;
   try {
+    const postCount = await client.post.count({});
     const posts = await client.post.findMany({
       take: pageSize,
       skip: (+page - 1) * pageSize,
+      include: {
+        _count: {
+          select: {
+            answers: true,
+            favs: true,
+          },
+        },
+        user: {
+          select: {
+            username: true,
+            id: true,
+            avatar: true,
+          },
+        },
+        answers: {
+          select: {
+            answer: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
     });
     if (!posts) {
       return res.status(404).json({ ok: false, error: "Not found" });
     }
-    return res.status(200).json({ ok: true, posts });
+    return res.status(200).json({ ok: true, posts, postCount });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Server Not OK" });
