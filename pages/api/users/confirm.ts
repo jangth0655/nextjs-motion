@@ -22,7 +22,7 @@ const handler = async (
     },
   });
   if (!foundToken) {
-    return res.status(401).json({ ok: false, error: "Token not found" });
+    return res.json({ ok: false, error: "Token not found" });
   } else {
     req.session.user = {
       id: foundToken.userId,

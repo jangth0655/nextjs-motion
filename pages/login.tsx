@@ -2,26 +2,44 @@
 import Button from "@components/button";
 import Error from "@components/errors";
 import Input from "@components/input";
+import useMutation from "@libs/client/mutation";
+
 import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+interface LoginMutationRes {
+  ok: boolean;
+  [key: string]: any;
+  error: string;
+}
+
 interface LoginForm {
-  username: string;
   email: string;
-  error?: string;
+  username: string;
 }
 
 const login: NextPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm<LoginForm>({
-    mode: "onChange",
-  });
-  const onValid = (data: LoginForm) => {
-    console.log(data);
+  const router = useRouter();
+  const { register, handleSubmit } = useForm<LoginForm>();
+  const [
+    loginMutation,
+    { data: loginData, loading: loginLoading, error: loginError },
+  ] = useMutation<LoginMutationRes>("/api/users/login");
+
+  const onValid = (formValue: LoginForm) => {
+    loginMutation(formValue);
+  };
+
+  useEffect(() => {
+    if (loginData && loginData?.ok) {
+      router.push("/");
+    }
+  }, [loginData, router]);
+
+  const onClick = () => {
+    router.push("/enter");
   };
 
   return (
@@ -32,50 +50,46 @@ const login: NextPage = () => {
             Motion
           </h1>
           <h3 className="text-orange-500 px-2 uppercase text-lg font-bold ">
-            sign up
+            Login
           </h3>
         </header>
         <main className="mt-10">
           <form
             onSubmit={handleSubmit(onValid)}
-            className="flex flex-col justify-center items-center py-6 px-2 "
+            className="flex flex-col justify-center items-center py-6"
           >
             <div className="w-full flex flex-col justify-center items-center space-y-7">
               <div className="flex flex-col space-y-2 lg:w-2/4 w-full">
                 <span className="text-gray-500 block">Email</span>
                 <Input
-                  register={register("email", {
-                    required: "Email is required",
-                    validate: {
-                      emailForm: (value) =>
-                        value.includes("@") || "Plz write email form",
-                    },
-                  })}
+                  register={register("email")}
                   type="text"
                   lgScreen={true}
                   placeholder="Email"
                 />
-                {errors?.email?.message && (
-                  <Error text={errors.email?.message} />
-                )}
               </div>
               <div className="flex flex-col space-y-2 lg:w-2/4  w-full">
                 <span className="text-gray-500 block">Username</span>
                 <Input
-                  register={register("username", {
-                    required: "Username is required",
-                  })}
+                  register={register("username")}
                   type="text"
                   lgScreen={true}
                   placeholder="Username"
                 />
-                {errors?.username?.message && (
-                  <Error text={errors.username?.message} />
-                )}
               </div>
             </div>
-            <Button lgScreen={true} text="sign up" />
+            <div className="w-full mt-10">
+              <Button loading={loginLoading} lgScreen={true} text="Login" />
+            </div>
           </form>
+          <div className="text-center w-full ">
+            <Button onClick={onClick} lgScreen={true} text="go sign up" />
+          </div>
+          {loginError && (
+            <div className="mt-5">
+              <Error text={loginData?.error} />
+            </div>
+          )}
         </main>
       </div>
     </div>
