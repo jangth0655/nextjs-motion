@@ -1,27 +1,22 @@
 import { User } from "@prisma/client";
-import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 interface UserProfile {
   ok: boolean;
   me?: User;
+  error: string;
 }
 
 export default function useUser() {
-  const [loginUser, setLoginUser] = useState<UserProfile>();
   const router = useRouter();
+  const { data, error } = useSWR<UserProfile>("/api/users/me");
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await axios.get<UserProfile>("/api/users/me");
-      setLoginUser(data);
-      if (!data || !data?.ok) {
-        router.replace("/");
-      }
-      return data;
-    })();
-  }, [router]);
+  /*   useEffect(() => {
+    if (data && !data.ok) {
+      router.replace("/");
+    }
+  }, [router, data]); */
 
-  return { loginUser: loginUser?.ok, meProfile: loginUser?.me };
+  return { ok: data?.ok, userData: data?.me, isLoading: !data && !error };
 }

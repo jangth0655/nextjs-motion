@@ -39,12 +39,12 @@ const login: NextPage = () => {
   }, [loginData, router]);
 
   const onClick = () => {
-    router.push("/enter");
+    router.replace("/enter");
   };
 
   return (
-    <div className="bg-orange-50 h-screen flex flex-col justify-center items-center">
-      <div className=" w-[50%] m-auto">
+    <div className="bg-orange-50 h-screen px-8 flex flex-col justify-center items-center">
+      <div className=" max-w-lg w-full m-auto">
         <header className="text-center">
           <h1 className="text-orange-500 px-2 uppercase text-[2rem] font-bold tracking-wider">
             Motion
@@ -59,7 +59,7 @@ const login: NextPage = () => {
             className="flex flex-col justify-center items-center py-6"
           >
             <div className="w-full flex flex-col justify-center items-center space-y-7">
-              <div className="flex flex-col space-y-2 lg:w-2/4 w-full">
+              <div className="flex flex-col space-y-2  w-full">
                 <span className="text-gray-500 block">Email</span>
                 <Input
                   register={register("email")}
@@ -68,7 +68,7 @@ const login: NextPage = () => {
                   placeholder="Email"
                 />
               </div>
-              <div className="flex flex-col space-y-2 lg:w-2/4  w-full">
+              <div className="flex flex-col space-y-2   w-full">
                 <span className="text-gray-500 block">Username</span>
                 <Input
                   register={register("username")}
@@ -78,7 +78,7 @@ const login: NextPage = () => {
                 />
               </div>
             </div>
-            <div className="w-full mt-10">
+            <div className="w-full mt-10 text-center">
               <Button loading={loginLoading} lgScreen={true} text="Login" />
             </div>
           </form>

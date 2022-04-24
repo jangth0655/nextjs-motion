@@ -23,7 +23,6 @@ export default function Input({
       placeholder={placeholder}
       required={required}
       className={cls(
-        lgScreen ? "lg:2/4" : "w-full",
         "focus:border-2 focus:border-orange-400  w-full border-gray-200 p-2  border-2 rounded-md placeholder:text-gray-300 text-gray-500"
       )}
     />

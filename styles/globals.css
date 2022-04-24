@@ -12,4 +12,5 @@ button {
 
 * {
   letter-spacing: 0.025em;
+  box-sizing: border-box;
 }

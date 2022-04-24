@@ -1,9 +1,8 @@
-import useUser from "@libs/client/useUser";
-import axios from "axios";
+import Layout from "@components/layout";
 import type { NextPage } from "next";
 
 const Home: NextPage = () => {
-  return <div></div>;
+  return <Layout goBack={false}></Layout>;
 };
 
 export default Home;

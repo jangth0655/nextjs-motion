@@ -29,7 +29,7 @@ export default function withHandler({
         .json({ ok: false, error: "Request method is not correct" });
     }
     if (isPrivate && !req?.session?.user) {
-      return res.status(401).json({ ok: false, error: "Plz log in." });
+      return res.json({ ok: false, error: "Plz log in." });
     }
     try {
       return await handler(req, res);

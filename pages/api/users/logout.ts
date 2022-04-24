@@ -1,6 +1,7 @@
 import client from "@libs/server/client";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import { withSession } from "@libs/server/withSession";
+
 import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (
@@ -11,27 +12,20 @@ const handler = async (
     session: { user },
   } = req;
 
-  if (!user) {
-    return res.status(404).send({ ok: false, error: "Not found" });
-  }
-
   try {
-    const me = await client.user.findUnique({
+    const existUser = await client.user.findUnique({
       where: {
         id: user?.id,
       },
       select: {
         id: true,
-        avatar: true,
-        username: true,
-        email: true,
       },
     });
-    if (!me) {
-      return res.status(404).send({ ok: false, error: "Not found" });
+    if (!existUser) {
+      return res.status(404).json({ ok: false });
     }
-
-    return res.status(200).json({ ok: true, me });
+    req.session.destroy();
+    return res.status(200).json({ ok: true });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Server Error" });
