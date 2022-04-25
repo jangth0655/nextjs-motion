@@ -1,14 +1,14 @@
 import useUser from "@libs/client/useUser";
-import { ok } from "assert";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 
 interface LayoutProps {
   children?: React.ReactNode;
   goBack: boolean;
+  title?: string;
 }
 
-const Layout = ({ children, goBack = false }: LayoutProps) => {
+const Layout = ({ children, goBack = false, title }: LayoutProps) => {
   const { ok } = useUser();
 
   const router = useRouter();
@@ -34,7 +34,7 @@ const Layout = ({ children, goBack = false }: LayoutProps) => {
   };
 
   return (
-    <section className="h-screen ">
+    <section className="h-screen">
       <nav className=" px-4 pt-8 text-sm lg:text-base text-orange-600">
         {goBack ? (
           <>
@@ -57,6 +57,9 @@ const Layout = ({ children, goBack = false }: LayoutProps) => {
                   />
                 </svg>
                 <span className="uppercase">motion</span>
+              </div>
+              <div className="flex items-center text-2xl">
+                <span>{title}</span>
               </div>
               <div
                 onClick={canGoBack}
@@ -98,6 +101,9 @@ const Layout = ({ children, goBack = false }: LayoutProps) => {
                 />
               </svg>
               <span className="uppercase">motion</span>
+            </div>
+            <div className="flex items-center text-2xl">
+              <span>{title}</span>
             </div>
             <div className="flex lg:space-x-24 space-x-6">
               <div className="flex flex-col items-center cursor-pointer ">
@@ -198,9 +204,7 @@ const Layout = ({ children, goBack = false }: LayoutProps) => {
         )}
         <div className="mt-5 h-[0.5px] w-full bg-orange-200" />
       </nav>
-      <main className="bg-purple-100 h-screen max-w-2xl m-auto mt-6">
-        {children}
-      </main>
+      <main className=" h-screen max-w-2xl m-auto mt-6">{children}</main>
     </section>
   );
 };

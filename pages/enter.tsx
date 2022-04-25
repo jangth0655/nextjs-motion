@@ -93,7 +93,6 @@ const login: NextPage = () => {
               required: "Token is required!",
             })}
             type="text"
-            lgScreen={true}
             placeholder="Write a Token"
           />
           {enterData?.token && (
@@ -104,7 +103,7 @@ const login: NextPage = () => {
             </div>
           )}
           <div className="text-center w-full mt-5">
-            <Button lgScreen={true} text="Confirm" loading={tokenLoading} />
+            <Button text="Confirm" loading={tokenLoading} />
           </div>
         </form>
         {formTokenErrors.token?.message && (
@@ -143,7 +142,6 @@ const login: NextPage = () => {
                     },
                   })}
                   type="text"
-                  lgScreen={true}
                   placeholder="Email"
                 />
                 {errors?.email?.message && (
@@ -157,7 +155,6 @@ const login: NextPage = () => {
                     required: "Username is required",
                   })}
                   type="text"
-                  lgScreen={true}
                   placeholder="Username"
                 />
                 {errors?.username?.message && (
@@ -166,7 +163,7 @@ const login: NextPage = () => {
               </div>
             </div>
             <div className="w-full mt-10 text-center">
-              <Button loading={enterLoading} lgScreen={true} text="sign up" />
+              <Button loading={enterLoading} text="sign up" />
             </div>
             {enterError && (
               <div className="mt-8 w-full">
@@ -175,7 +172,7 @@ const login: NextPage = () => {
             )}
           </form>
           <div className="text-center">
-            <Button onClick={onClick} lgScreen={true} text="go log in" />
+            <Button onClick={onClick} text="go log in" />
           </div>
         </main>
       </div>

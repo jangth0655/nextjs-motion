@@ -10,7 +10,6 @@ const handler = async (
   const {
     query: { page = 1 },
   } = req;
-  console.log(req.query);
 
   const pageSize = 5;
   try {
@@ -19,17 +18,16 @@ const handler = async (
       take: pageSize,
       skip: (+page - 1) * pageSize,
       include: {
+        user: {
+          select: {
+            username: true,
+            avatar: true,
+          },
+        },
         _count: {
           select: {
             answers: true,
             favs: true,
-          },
-        },
-        user: {
-          select: {
-            username: true,
-            id: true,
-            avatar: true,
           },
         },
         answers: {

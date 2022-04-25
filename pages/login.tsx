@@ -29,6 +29,7 @@ const login: NextPage = () => {
   ] = useMutation<LoginMutationRes>("/api/users/login");
 
   const onValid = (formValue: LoginForm) => {
+    if (loginLoading) return;
     loginMutation(formValue);
   };
 
@@ -64,7 +65,6 @@ const login: NextPage = () => {
                 <Input
                   register={register("email")}
                   type="text"
-                  lgScreen={true}
                   placeholder="Email"
                 />
               </div>
@@ -73,17 +73,16 @@ const login: NextPage = () => {
                 <Input
                   register={register("username")}
                   type="text"
-                  lgScreen={true}
                   placeholder="Username"
                 />
               </div>
             </div>
             <div className="w-full mt-10 text-center">
-              <Button loading={loginLoading} lgScreen={true} text="Login" />
+              <Button loading={loginLoading} text="Login" />
             </div>
           </form>
           <div className="text-center w-full ">
-            <Button onClick={onClick} lgScreen={true} text="go sign up" />
+            <Button onClick={onClick} text="go sign up" />
           </div>
           {loginError && (
             <div className="mt-5">

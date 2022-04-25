@@ -1,3 +1,3 @@
 export const cls = (...className: string[]) => {
-  return className.join(" ");
+  return className?.join(" ");
 };

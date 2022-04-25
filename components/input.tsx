@@ -4,15 +4,13 @@ import { UseFormRegisterReturn } from "react-hook-form";
 interface InputProps {
   type: string;
   required?: boolean;
-  lgScreen: boolean;
-  register: UseFormRegisterReturn;
+  register?: UseFormRegisterReturn;
   placeholder?: string;
 }
 
 export default function Input({
   type,
   required,
-  lgScreen,
   register,
   placeholder,
 }: InputProps) {

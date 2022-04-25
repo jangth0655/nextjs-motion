@@ -25,6 +25,12 @@ const handler = async (
         avatar: true,
         username: true,
         email: true,
+        _count: {
+          select: {
+            favs: true,
+            posts: true,
+          },
+        },
       },
     });
     if (!me) {

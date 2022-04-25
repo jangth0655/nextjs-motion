@@ -15,7 +15,7 @@ const handler = async (
     const post = await client.post.create({
       data: {
         comment,
-        image,
+        image: image ? "xxxx" : null,
         user: {
           connect: {
             id: user?.id,

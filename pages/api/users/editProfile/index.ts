@@ -19,6 +19,7 @@ const handler = async (
         id: user?.id,
       },
     });
+
     if (!currentUser) {
       return res.status(404).json({ ok: false, error: "Not found User" });
     }
@@ -34,7 +35,10 @@ const handler = async (
         })
       );
       if (alreadyExists) {
-        return res.json({ ok: false, error: "Email already token" });
+        return res.json({
+          ok: false,
+          error: alreadyExists ? "Email already taken" : null,
+        });
       }
       await client.user.update({
         where: {
@@ -59,9 +63,10 @@ const handler = async (
         })
       );
       if (alreadyUsername) {
-        return res
-          .status(400)
-          .json({ ok: false, error: "Username. already token" });
+        return res.json({
+          ok: false,
+          error: alreadyUsername ? "Username already taken" : null,
+        });
       }
       await client.user.update({
         where: {
