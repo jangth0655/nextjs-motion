@@ -20,7 +20,7 @@ const PostList = ({ userPost, postCount }: PostData) => {
     console.log(page);
 
     if (userPost && postCount) {
-      const totalPost = postCount;
+      const totalPost = postCount - 1;
       const maxPage = Math.floor(totalPost / OFFSET);
       isBack ? "" : setPage((prev) => (prev === maxPage ? 0 : page + 1));
     }

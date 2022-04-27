@@ -1,3 +1,4 @@
+import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
 import { Post } from "@prisma/client";
 import { useRouter } from "next/router";
@@ -45,6 +46,7 @@ const HomePost = ({ _count, userId, comment, user, id, image }: HomePost) => {
               <div className="mr-2 ">
                 <img
                   onClick={() => onSeeProfile(userId)}
+                  src={deliveryFile(user.avatar)}
                   className="w-6 h-6 sm:w-8 sm:h-8 bg-slate-400 rounded-full flex justify-center items-center"
                 />
               </div>

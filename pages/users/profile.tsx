@@ -3,10 +3,12 @@ import Input from "@components/input";
 import Layout from "@components/layout";
 import PostList from "@components/postList";
 import Seperater from "@components/seperater";
+import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
 import useUser from "@libs/client/useUser";
 import { Post, User } from "@prisma/client";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
@@ -38,6 +40,8 @@ interface EditData {
 }
 
 const Profile: NextPage = () => {
+  const router = useRouter();
+  const [avatarPreview, setAvatarPreview] = useState("");
   useUser();
   const {
     register,
@@ -55,34 +59,100 @@ const Profile: NextPage = () => {
   const { data: userData, mutate } =
     useSWR<UserWithFavAndPostCount>("/api/users/me");
 
-  const onValid = ({ email, username, avatar }: FormData) => {
-    return;
+  const onValid = async ({ email, username, avatar }: FormData) => {
     if (editLoading) return;
     if (email === "" && username === "") {
       return setError("formError", {
         message: "Email OR Username are required.",
       });
     }
-    editProfile({ email, username, avatar });
+    if (avatar && avatar.length > 0 && userData?.me.id) {
+      const { uploadURL } = await (await fetch("/api/files")).json();
+
+      const form = new FormData();
+      form.append("file", avatar[0], userData?.me.id + "");
+
+      const {
+        result: { id },
+      } = await (
+        await fetch(uploadURL, {
+          method: "POST",
+          body: form,
+        })
+      ).json();
+      editProfile({ email, username, avatarId: id });
+    } else {
+      editProfile({ email, username });
+    }
   };
+
+  useEffect(() => {
+    if (editData && editData.ok) {
+      router.push("/");
+    }
+  }, [editData, router]);
 
   const avatar = watch("avatar");
   useEffect(() => {
     if (avatar && avatar.length > 0) {
       const file = avatar[0];
+      setAvatarPreview(URL.createObjectURL(file));
     }
   }, [avatar]);
 
   useEffect(() => {
     userData?.me.email && setValue("email", userData?.me?.email);
     userData?.me.username && setValue("username", userData?.me?.username);
+    userData?.me.avatar && setAvatarPreview(deliveryFile(userData.me.avatar));
   }, [userData?.me.email, userData?.me.username, setValue]);
 
   return (
     <Layout goBack={true}>
       <section className="text-gray-700 p-4">
-        {userData?.me?.avatar ? (
-          userData?.me.avatar
+        {avatarPreview ? (
+          <div className="px-6 py-20 flex items-center w-full h-[30%] ">
+            <img
+              src={avatarPreview}
+              className="rounded-full  border-dotted border-2 w-40 h-40 mr-5 flex justify-center items-center border-orange-300 cursor-pointer"
+            />
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <svg
+                  className="h-5 w-5 text-pink-500 mr-2 "
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="text-sm text-gray-400">
+                  {userData?.me._count?.favs ?? 0}
+                </span>
+              </div>
+
+              <div className="flex items-center cursor-pointer">
+                <svg
+                  className="h-5 w-5 text-gray-500 mr-2 "
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="text-sm text-gray-400">Chat</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <span className="block mr-2 text-gray-400">Poster</span>
+                <span>{userData?.me._count?.posts ?? 0}</span>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="px-6 py-20 flex items-center w-full h-[30%] ">
             <label className="rounded-full  border-dotted border-2 w-40 h-40 mr-5 flex justify-center items-center border-orange-300 cursor-pointer">

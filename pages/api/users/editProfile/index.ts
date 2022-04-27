@@ -10,7 +10,7 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    body: { email, username, avatar },
+    body: { email, username, avatarId },
   } = req;
 
   try {
@@ -79,13 +79,13 @@ const handler = async (
       return res.status(200).json({ ok: true });
     }
 
-    if (avatar) {
+    if (avatarId) {
       await client.user.update({
         where: {
           id: user?.id,
         },
         data: {
-          avatar,
+          avatar: avatarId,
         },
       });
       return res.status(200).json({ ok: true });
