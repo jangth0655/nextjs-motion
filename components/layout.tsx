@@ -105,7 +105,7 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
             <div className="flex items-center text-2xl">
               <span>{title}</span>
             </div>
-            <div className="flex lg:space-x-24 space-x-6">
+            <div className="flex lg:space-x-24 space-x-3">
               <div className="flex flex-col items-center cursor-pointer ">
                 <svg
                   className="h-5 w-5 text-orange-300 hover:scale-125 hover:transition-all"

@@ -8,23 +8,29 @@ const handler = async (
   res: NextApiResponse<ResponseType>
 ) => {
   const {
-    body: { comment, image },
-    session: { user },
+    query: { userId },
   } = req;
+
   try {
-    const post = await client.post.create({
-      data: {
-        comment,
-        image: image && null,
-        user: {
-          connect: {
-            id: user?.id,
+    const userPost = await client.user.findUnique({
+      where: {
+        id: +userId,
+      },
+      include: {
+        posts: true,
+        _count: {
+          select: {
+            posts: true,
           },
         },
       },
     });
 
-    return res.status(200).json({ ok: true, post });
+    if (!userPost) {
+      return res.send({ ok: true });
+    } else {
+      return res.status(200).json({ ok: true, userPost });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error });
@@ -33,7 +39,7 @@ const handler = async (
 
 export default withSession(
   withHandler({
-    method: ["POST"],
+    method: ["GET"],
     handler,
   })
 );

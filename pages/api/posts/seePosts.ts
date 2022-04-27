@@ -8,6 +8,7 @@ const handler = async (
   res: NextApiResponse<ResponseType>
 ) => {
   const {
+    session: { user },
     query: { page = 1 },
   } = req;
 
@@ -44,10 +45,22 @@ const handler = async (
         },
       },
     });
+
+    const isLiked = Boolean(
+      await client.fav.findFirst({
+        where: {
+          userId: user?.id,
+        },
+        select: {
+          id: true,
+        },
+      })
+    );
+
     if (!posts) {
       return res.status(404).json({ ok: false, error: "Not found" });
     }
-    return res.status(200).json({ ok: true, posts, postCount });
+    return res.status(200).json({ ok: true, posts, postCount, isLiked });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Server Not OK" });

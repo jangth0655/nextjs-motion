@@ -10,7 +10,7 @@ interface UserProfile {
 
 export default function useUser() {
   const router = useRouter();
-  const { data, error } = useSWR<UserProfile>("/api/users/me");
+  const { data, error } = useSWR<UserProfile>("/api/users/loginUser");
 
   useEffect(() => {
     if (data && !data.ok) {

@@ -51,7 +51,8 @@ const handler = async (
 
 export default withSession(
   withHandler({
-    method: ["GET", "POST"],
+    method: ["POST"],
     handler,
+    isPrivate: false,
   })
 );

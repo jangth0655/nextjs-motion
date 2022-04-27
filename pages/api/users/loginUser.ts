@@ -21,24 +21,7 @@ const handler = async (
         id: user?.id,
       },
       select: {
-        avatar: true,
-        username: true,
         id: true,
-        email: true,
-        posts: {
-          select: {
-            comment: true,
-            id: true,
-            image: true,
-            createdAt: true,
-          },
-        },
-        _count: {
-          select: {
-            favs: true,
-            posts: true,
-          },
-        },
       },
     });
     if (!me) {

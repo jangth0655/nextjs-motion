@@ -1,6 +1,8 @@
 import Error from "@components/errors";
 import Input from "@components/input";
 import Layout from "@components/layout";
+import PostList from "@components/postList";
+import Seperater from "@components/seperater";
 import useMutation from "@libs/client/mutation";
 import useUser from "@libs/client/useUser";
 import { Post, User } from "@prisma/client";
@@ -9,22 +11,25 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 
-interface FavAndPostCount extends User {
+interface ElseWithUser extends User {
   _count: {
     favs: number;
     posts: number;
   };
+  posts: Post[];
 }
 
 interface UserWithFavAndPostCount {
   ok: boolean;
   error: string;
-  me: FavAndPostCount;
+  me: ElseWithUser;
 }
 
 interface FormData {
   email: string;
   username: string;
+  avatar: FileList;
+  formError?: string;
 }
 
 interface EditData {
@@ -32,66 +37,61 @@ interface EditData {
   editError?: string;
 }
 
-interface PostResponse {
-  ok: boolean;
-  postCount: number;
-  posts: Post[];
-  _count: {
-    answers: number;
-    favs: number;
-  };
-}
-
 const Profile: NextPage = () => {
   useUser();
-  const [page, setPage] = useState(0);
   const {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors },
+    watch,
   } = useForm<FormData>();
-  const [editProfile, { data: editData, error: editError }] =
-    useMutation<EditData>("/api/users/editProfile");
+  const [
+    editProfile,
+    { data: editData, error: editError, loading: editLoading },
+  ] = useMutation<EditData>("/api/users/editProfile");
 
   const { data: userData, mutate } =
     useSWR<UserWithFavAndPostCount>("/api/users/me");
 
-  const { data: postData, error: postError } = useSWR<PostResponse>(
-    "/api/posts/seePosts?page=1"
-  );
-
-  const onValid = (formData: FormData) => {
-    editProfile(formData);
-  };
-
-  const OFFSET = 3;
-
-  const onPage = () => {
-    console.log(1);
-    if (postData) {
-      const totalPost = postData.postCount;
-      const maxPage = Math.floor(totalPost / OFFSET);
-      setPage((prev) => (prev === maxPage ? 0 : page + 1));
+  const onValid = ({ email, username, avatar }: FormData) => {
+    return;
+    if (editLoading) return;
+    if (email === "" && username === "") {
+      return setError("formError", {
+        message: "Email OR Username are required.",
+      });
     }
+    editProfile({ email, username, avatar });
   };
 
-  console.log(page);
+  const avatar = watch("avatar");
+  useEffect(() => {
+    if (avatar && avatar.length > 0) {
+      const file = avatar[0];
+    }
+  }, [avatar]);
 
   useEffect(() => {
-    userData?.me.email && setValue("email", userData.me.email);
-    userData?.me.username && setValue("username", userData.me.username);
+    userData?.me.email && setValue("email", userData?.me?.email);
+    userData?.me.username && setValue("username", userData?.me?.username);
   }, [userData?.me.email, userData?.me.username, setValue]);
 
   return (
     <Layout goBack={true}>
-      <section className="h-full text-gray-700 relative">
+      <section className="text-gray-700 p-4">
         {userData?.me?.avatar ? (
           userData?.me.avatar
         ) : (
           <div className="px-6 py-20 flex items-center w-full h-[30%] ">
             <label className="rounded-full  border-dotted border-2 w-40 h-40 mr-5 flex justify-center items-center border-orange-300 cursor-pointer">
-              <input type="file" className="hidden" accept="image/*" />
+              <input
+                {...register("avatar")}
+                type="file"
+                className="hidden"
+                accept="image/*"
+              />
               <svg
                 className="h-16 w-16 text-orange-400 z-10"
                 viewBox="0 0 20 20"
@@ -192,7 +192,11 @@ const Profile: NextPage = () => {
                 </div>
               </div>
             </div>
-
+            {errors.formError?.message && (
+              <div>
+                <Error text={errors.formError?.message} />
+              </div>
+            )}
             <div className="flex justify-center items-center m-auto py-2">
               <button className="py-1 px-5 hover:text-orange-600  hover:transition-all text-orange-400">
                 <svg
@@ -215,20 +219,16 @@ const Profile: NextPage = () => {
             <div className="mt-3">{<Error text={editError} />}</div>
           )}
         </div>
-
-        <div className="h-[30%] grid grid-cols-3  absolute w-full ">
-          {postData?.posts
-            .slice(OFFSET * page, OFFSET * page + OFFSET)
-            .map((post) => (
-              <div
-                key={post.id}
-                className="border-orange-300 border-2 w-full p-1 "
-              >
-                comment : {post.comment}
-              </div>
-            ))}
-        </div>
+        <Seperater />
       </section>
+      <div className="">
+        {userData?.me.posts && (
+          <PostList
+            userPost={userData?.me.posts}
+            postCount={userData.me._count.posts}
+          />
+        )}
+      </div>
     </Layout>
   );
 };

@@ -52,13 +52,27 @@ const handler = async (
                   id: true,
                   username: true,
                   avatar: true,
+                  email: true,
                 },
               },
             },
           },
         },
       });
-      return res.status(200).json({ ok: true, seePost, isMine });
+
+      const isLiked = Boolean(
+        await client.fav.findFirst({
+          where: {
+            postId: seePost?.id,
+            userId: user?.id,
+          },
+          select: {
+            id: true,
+          },
+        })
+      );
+
+      return res.status(200).json({ ok: true, seePost, isMine, isLiked });
     }
 
     if (req.method === "POST") {
