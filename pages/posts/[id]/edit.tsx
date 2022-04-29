@@ -1,13 +1,14 @@
 import Button from "@components/button";
 import Error from "@components/errors";
 import Layout from "@components/layout";
+import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
-import useUser from "@libs/client/useUser";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import useSWR from "swr";
 
 interface EditForm {
   comment: string;
@@ -19,19 +20,38 @@ interface EditPostResponse {
   error?: string;
 }
 
+interface PostContent {
+  ok: boolean;
+  postContent: {
+    comment: string;
+    image: string;
+    id: number;
+  };
+}
+
+interface RemovePost {
+  ok: true;
+  error?: string;
+}
+
 const UploadPost: NextPage = () => {
   const [imagePreview, setImagePreview] = useState("");
   const router = useRouter();
   const [editPost, { data: editData, loading: editLoading, error }] =
-    useMutation<EditPostResponse>(`/api/posts/${router.query.id}`);
+    useMutation<EditPostResponse>(`/api/posts/${router.query?.id}`);
+  const { data: postPreview } = useSWR<PostContent>(
+    router.query?.id && `/api/posts/${router.query?.id}?post=content`
+  );
 
-  console.log(router.query.id);
+  const [removeItem, { data: removeData, loading: removeLoading }] =
+    useMutation<RemovePost>(`/api/posts/${router.query.id}/removePost`);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = useForm<EditForm>();
 
   const onValid = async ({ comment, image }: EditForm) => {
@@ -54,6 +74,10 @@ const UploadPost: NextPage = () => {
     }
   };
 
+  const onRemovePost = (id: number) => {
+    removeItem(id);
+  };
+
   const image = watch("image");
   useEffect(() => {
     if (image && image.length > 0) {
@@ -63,10 +87,19 @@ const UploadPost: NextPage = () => {
   }, [image]);
 
   useEffect(() => {
-    if (editData && editData.ok) {
+    if (!postPreview) return;
+    postPreview?.postContent.comment &&
+      setValue("comment", postPreview.postContent.comment);
+    postPreview?.postContent?.image &&
+      setImagePreview(deliveryFile(postPreview?.postContent?.image));
+  }, [postPreview, setValue]);
+
+  useEffect(() => {
+    if ((editData && editData.ok) || (removeData && removeData.ok)) {
       router.push("/");
     }
-  }, [editData, router]);
+  }, [editData, removeData, router]);
+
   return (
     <Layout goBack={true} title="Create Post">
       <form
@@ -165,6 +198,28 @@ const UploadPost: NextPage = () => {
             <div className=" mt-10">
               <Button text="edit" loading={editLoading} />
             </div>
+
+            {removeLoading
+              ? "Loading"
+              : postPreview?.postContent.id && (
+                  <div
+                    onClick={() => onRemovePost(postPreview?.postContent.id)}
+                    className="flex justify-center items-center mt-5 p-[2.5px] rounded-md text-pink-300 cursor-pointer hover:text-pink-500 transition-all"
+                  >
+                    <span className="font-bold">Delete Edit</span>
+                    <svg
+                      className="ml-2 h-8 w-8"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                )}
           </div>
         </div>
       </form>

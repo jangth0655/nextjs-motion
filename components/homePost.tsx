@@ -5,7 +5,6 @@ import Image from "next/image";
 import Seperater from "./seperater";
 import { useState } from "react";
 import { cls } from "@libs/client/cls";
-import { setConfig } from "next/config";
 
 interface HomePost extends Post {
   _count: {
@@ -42,6 +41,12 @@ const HomePost = ({
     }
   };
 
+  const toggleMain = () => {
+    setSlideConfig(false);
+  };
+
+  console.log(slideConfig);
+
   const onSeeProfile = (id: number) => {
     router.push(`/users/${id}/profile`);
   };
@@ -56,10 +61,10 @@ const HomePost = ({
 
   return (
     <>
-      <main className="text-gray-700 p-4 snap-y -z-10">
-        <div className=" border-gray-200 p-4 space-y-8 rounded-lg ">
+      <main className="text-gray-700 p-4 snap-y ">
+        <div className=" border-gray-200 p-4 space-y-8 rounded-lg  -z-10">
           <div className="flex items-center mb-4 justify-between">
-            <div className="flex cursor-pointer relative">
+            <div className="z-50 flex cursor-pointer relative ">
               <div className="z-10" onClick={() => onSlideConfig(id)}>
                 {user.avatar ? (
                   <div className="mr-2 relative w-6 h-6 sm:w-8 sm:h-8">
@@ -67,7 +72,6 @@ const HomePost = ({
                       src={deliveryFile(user.avatar)}
                       className="bg-slate-100 rounded-full flex justify-center items-center"
                       layout="fill"
-                      alt=""
                     />
                   </div>
                 ) : (
@@ -104,12 +108,12 @@ const HomePost = ({
               >
                 <div
                   onClick={() => onSeeProfile(userId)}
-                  className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-400 rounded-md py-1"
+                  className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1"
                 >
                   <span>Profile</span>
                 </div>
                 <div className="h-[1px] w-full bg-orange-100 " />
-                <div className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-400 rounded-md py-1">
+                <div className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1">
                   <span>Chat</span>
                 </div>
               </div>
@@ -140,22 +144,6 @@ const HomePost = ({
                   >
                     <span>Edit Post</span>
                   </div>
-                  <div
-                    onClick={() => onEditPost(id)}
-                    className="ml-2 text-xs p-[2.5px] rounded-md text-pink-300 cursor-pointer hover:text-pink-500 transition-all"
-                  >
-                    <svg
-                      className="h-6 w-6"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
                 </>
               ) : null}
             </div>
@@ -168,8 +156,7 @@ const HomePost = ({
                 className="bg-cover bg-center"
                 objectFit="cover"
                 layout="fill"
-                alt=""
-                quality={100}
+                priority
               />
             </div>
           ) : (

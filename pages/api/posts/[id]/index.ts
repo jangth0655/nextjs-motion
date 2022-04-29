@@ -9,8 +9,22 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { id },
+    query: { id, post },
   } = req;
+
+  if (post) {
+    const postContent = await client.post.findUnique({
+      where: {
+        id: +id,
+      },
+      select: {
+        comment: true,
+        image: true,
+        id: true,
+      },
+    });
+    return res.json({ ok: true, postContent });
+  }
 
   try {
     if (req.method === "GET") {
@@ -81,8 +95,6 @@ const handler = async (
             comment: true,
           },
         });
-        console.log(alreadyPost);
-        console.log(imageId);
 
         if (!alreadyPost) {
           return res.status(404).json({ ok: false, error: "Not found post" });

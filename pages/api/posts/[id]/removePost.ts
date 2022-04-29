@@ -25,9 +25,6 @@ const handler = async (
   );
 
   try {
-    const {
-      query: { id },
-    } = req;
     const exists = await client.post.findUnique({
       where: {
         id: +id,
