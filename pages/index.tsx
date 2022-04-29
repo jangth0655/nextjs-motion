@@ -1,5 +1,6 @@
 import HomePost from "@components/homePost";
 import Layout from "@components/layout";
+import useUser from "@libs/client/useUser";
 import { Post } from "@prisma/client";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -24,18 +25,21 @@ interface PostResponse {
 }
 
 const Home: NextPage = () => {
-  const { data: postsData, mutate } = useSWR<PostResponse>(
-    "/api/posts/seePosts"
-  );
+  const { data: postsData } = useSWR<PostResponse>("/api/posts/seePosts");
   const router = useRouter();
+
   const onUpload = () => {
     router.push("/posts/upload");
   };
 
   return (
-    <Layout goBack={false}>
-      {postsData &&
-        postsData?.posts?.map((post) => <HomePost key={post.id} {...post} />)}
+    <>
+      <Layout goBack={false}>
+        {postsData &&
+          postsData?.posts?.map((post) => {
+            return <HomePost key={post.id} {...post} />;
+          })}
+      </Layout>
       <div
         onClick={onUpload}
         className="fixed bottom-8 right-6 w-8 h-8 sm:w-12 sm:h-12 bg-orange-400 rounded-full flex justify-center items-center cursor-pointer"
@@ -54,7 +58,7 @@ const Home: NextPage = () => {
           />
         </svg>
       </div>
-    </Layout>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { SWRConfig } from "swr";
+import Script from "next/script";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const fetcher = async (url: string) => await (await fetch(url)).json();

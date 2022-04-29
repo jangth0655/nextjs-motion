@@ -8,14 +8,15 @@ const handler = async (
   res: NextApiResponse<ResponseType>
 ) => {
   const {
-    body: { comment, image },
+    body: { comment, imageId },
     session: { user },
   } = req;
+
   try {
     const post = await client.post.create({
       data: {
         comment,
-        image: image && null,
+        image: imageId,
         user: {
           connect: {
             id: user?.id,

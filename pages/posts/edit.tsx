@@ -2,6 +2,7 @@ import Button from "@components/button";
 import Error from "@components/errors";
 import Layout from "@components/layout";
 import useMutation from "@libs/client/mutation";
+import useUser from "@libs/client/useUser";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -79,7 +80,7 @@ const UploadPost: NextPage = () => {
                 src={imagePreview}
                 className="bg-cover bg-center cursor-pointer"
                 layout="fill"
-                objectFit="contain"
+                objectFit="cover"
                 alt=""
                 priority
               />

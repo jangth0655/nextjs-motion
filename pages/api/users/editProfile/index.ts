@@ -10,7 +10,7 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    body: { email, username, avatarId },
+    body: { email, username, avatarId, id },
   } = req;
 
   try {
@@ -19,6 +19,22 @@ const handler = async (
         id: user?.id,
       },
     });
+    console.log(req.body.id);
+
+    if (id) {
+      await client.user.update({
+        data: {
+          avatar: null,
+        },
+        where: {
+          id,
+        },
+        select: {
+          id: true,
+        },
+      });
+      return res.json({ ok: true });
+    }
 
     if (!currentUser) {
       return res.status(404).json({ ok: false, error: "Not found User" });

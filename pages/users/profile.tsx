@@ -5,9 +5,9 @@ import PostList from "@components/postList";
 import Seperater from "@components/seperater";
 import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
-import useUser from "@libs/client/useUser";
 import { Post, User } from "@prisma/client";
 import { NextPage } from "next";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -42,7 +42,6 @@ interface EditData {
 const Profile: NextPage = () => {
   const router = useRouter();
   const [avatarPreview, setAvatarPreview] = useState("");
-  useUser();
   const {
     register,
     handleSubmit,
@@ -56,8 +55,7 @@ const Profile: NextPage = () => {
     { data: editData, error: editError, loading: editLoading },
   ] = useMutation<EditData>("/api/users/editProfile");
 
-  const { data: userData, mutate } =
-    useSWR<UserWithFavAndPostCount>("/api/users/me");
+  const { data: userData } = useSWR<UserWithFavAndPostCount>("/api/users/me");
 
   const onValid = async ({ email, username, avatar }: FormData) => {
     if (editLoading) return;
@@ -92,6 +90,12 @@ const Profile: NextPage = () => {
     }
   }, [editData, router]);
 
+  useEffect(() => {
+    if (userData && !userData.ok) {
+      router.replace("/");
+    }
+  }, [userData, router]);
+
   const avatar = watch("avatar");
   useEffect(() => {
     if (avatar && avatar.length > 0) {
@@ -104,17 +108,65 @@ const Profile: NextPage = () => {
     userData?.me.email && setValue("email", userData?.me?.email);
     userData?.me.username && setValue("username", userData?.me?.username);
     userData?.me.avatar && setAvatarPreview(deliveryFile(userData.me.avatar));
-  }, [userData?.me.email, userData?.me.username, setValue]);
+  }, [
+    userData?.me.email,
+    userData?.me.username,
+    setValue,
+    userData?.me.avatar,
+  ]);
 
+  const removeAvatar = (id: number) => {
+    editProfile({ id });
+  };
   return (
     <Layout goBack={true}>
       <section className="text-gray-700 p-4">
         {avatarPreview ? (
-          <div className="px-6 py-20 flex items-center w-full h-[30%] ">
-            <img
-              src={avatarPreview}
-              className="rounded-full  border-dotted border-2 w-40 h-40 mr-5 flex justify-center items-center border-orange-300 cursor-pointer"
-            />
+          <div className=" px-6 flex items-center">
+            <div className="mb-10">
+              <div className="relative w-40 h-40  mr-4 mb-4">
+                <Image
+                  src={avatarPreview}
+                  className=" rounded-full  border-dotted  mr-5 flex justify-center items-center"
+                  objectFit="cover"
+                  layout="fill"
+                  alt=""
+                  priority={true}
+                />
+              </div>
+              <div className="flex justify-center">
+                <label className="flex p-1 items-center justify-center bg-orange-300 text-white rounded-lg text-xs cursor-pointer mr-4 hover:bg-orange-500 transition-all">
+                  <svg
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                  <span>Edit</span>
+                  <input
+                    {...register("avatar")}
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                  />
+                </label>
+                {userData?.me.id && (
+                  <div
+                    onClick={() => removeAvatar(userData?.me.id)}
+                    className="flex text-center p-1 bg-orange-300 text-white rounded-lg text-xs cursor-pointer hover:bg-orange-500 transition-all"
+                  >
+                    <span>Remove</span>
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="space-y-2">
               <div className="flex items-center">
                 <svg
@@ -214,7 +266,7 @@ const Profile: NextPage = () => {
           </div>
         )}
 
-        <div className="mb-8">
+        <div>
           <form
             onSubmit={handleSubmit(onValid)}
             className="p-4 w-full  flex items-center"
@@ -269,19 +321,23 @@ const Profile: NextPage = () => {
             )}
             <div className="flex justify-center items-center m-auto py-2">
               <button className="py-1 px-5 hover:text-orange-600  hover:transition-all text-orange-400">
-                <svg
-                  className="h-6 w-6 "
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                  />
-                </svg>
+                {editLoading ? (
+                  <span className="text-sm uppercase">Loading</span>
+                ) : (
+                  <svg
+                    className="h-6 w-6 "
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
           </form>

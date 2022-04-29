@@ -1,6 +1,7 @@
 import useUser from "@libs/client/useUser";
 import { useRouter } from "next/router";
 import React from "react";
+import useSWR from "swr";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -9,7 +10,7 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, goBack = false, title }: LayoutProps) => {
-  const { ok } = useUser();
+  const { data: userData } = useSWR("/api/users/loginUser");
 
   const router = useRouter();
   const onLogin = () => {
@@ -34,7 +35,7 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
   };
 
   return (
-    <section className="h-screen">
+    <section className="h-screen ">
       <nav className=" px-4 pt-8 text-sm lg:text-base text-orange-600">
         {goBack ? (
           <>
@@ -84,7 +85,7 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
               </div>
             </div>
           </>
-        ) : ok ? (
+        ) : userData?.ok ? (
           <div className="flex items-center justify-between">
             <div onClick={onHome} className="cursor-pointer flex items-center ">
               <svg

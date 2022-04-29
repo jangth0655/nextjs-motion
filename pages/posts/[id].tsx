@@ -1,11 +1,12 @@
 import { FavToggle } from "@components/homePost";
 import Layout from "@components/layout";
-import PostList from "@components/postList";
 import Seperater from "@components/seperater";
 import { cls } from "@libs/client/cls";
+import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
 import { Post } from "@prisma/client";
 import { NextPage } from "next";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import useSWR from "swr";
@@ -14,7 +15,7 @@ interface ElseWithPost extends Post {
   user: {
     avatar: string;
     id: number;
-    usename: string;
+    username: string;
   };
   _count: {
     answers: number;
@@ -46,13 +47,7 @@ const ItemDetail: NextPage = () => {
   );
 
   const { data: detailData, mutate } = useSWR<DetailResponse>(
-    router.query.id ? `/api/posts/${router.query.id}` : ""
-  );
-
-  const { data: userPostData } = useSWR<UserPost>(
-    router.query.id && detailData
-      ? `/api/posts/${router.query.id}/userPost?userId=${detailData?.seePost.user.id}`
-      : ""
+    router?.query?.id ? `/api/posts/${router?.query?.id}` : ""
   );
 
   const FavToggleBtn = (id?: number) => {
@@ -67,10 +62,10 @@ const ItemDetail: NextPage = () => {
           seePost: {
             ...prev.seePost,
             _count: {
-              ...prev.seePost._count,
+              ...prev.seePost?._count,
               favs: prev.isLiked
-                ? prev.seePost._count.favs - 1
-                : prev.seePost._count.favs + 1,
+                ? prev.seePost?._count.favs - 1
+                : prev.seePost?._count.favs + 1,
             },
           },
         },
@@ -78,27 +73,75 @@ const ItemDetail: NextPage = () => {
     );
   };
 
-  useEffect(() => {
-    if (detailData && !detailData.ok) {
-      router.replace("/");
-    }
-  }, [detailData, router]);
+  const onSeeProfile = (id: number) => {
+    router.push(`/users/${id}/profile`);
+  };
 
   return (
     <Layout goBack={true}>
       <section className="mt-10 text-gray-700 p-4 ">
-        <main className="flex flex-col space-y-10">
-          {detailData?.seePost?.image === null ? null : (
-            <div className="mb-8 h-48 ">
-              <img className="w-full  " />
+        <main className="flex flex-col h-[30rem]  p-4 space-y-8 rounded-lg ">
+          {detailData?.seePost.user && (
+            <div
+              onClick={() => onSeeProfile(detailData?.seePost?.user?.id)}
+              className="flex cursor-pointer"
+            >
+              {detailData?.seePost?.user.avatar ? (
+                <div className="mr-2 relative w-6 h-6 sm:w-8 sm:h-8">
+                  <Image
+                    src={deliveryFile(detailData?.seePost?.user?.avatar)}
+                    className="bg-slate-100 rounded-full flex justify-center items-center"
+                    layout="fill"
+                    alt=""
+                    priority
+                  />
+                </div>
+              ) : (
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex justify-center items-center border-2 border-orange-200 mr-2">
+                  <svg
+                    className="h-6 w-6 text-orange-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+              )}
+
+              <div>
+                <span className="text-xs">
+                  {detailData?.seePost?.user?.username}
+                </span>
+              </div>
             </div>
           )}
-          <div className="basis-[30%] space-y-5">
-            <p className="text-sm">{detailData?.seePost.comment}</p>
+
+          {detailData?.seePost?.image && (
+            <div className="relative w-80 h-80 overflow-hidden rounded-lg  border-2">
+              <Image
+                className=" bg-cover bg-center"
+                src={deliveryFile(detailData?.seePost?.image)}
+                objectFit="cover"
+                layout="fill"
+                alt="image"
+                quality={100}
+                priority
+              />
+            </div>
+          )}
+
+          <div className="space-y-5">
+            <p className="text-sm">{detailData?.seePost?.comment}</p>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <svg
-                  onClick={() => FavToggleBtn(detailData?.seePost.id)}
+                  onClick={() => FavToggleBtn(detailData?.seePost?.id)}
                   className={cls(
                     "h-4 w-4  cursor-pointer",
                     detailData?.isLiked ? "text-pink-500" : "text-gray-400"
@@ -115,7 +158,7 @@ const ItemDetail: NextPage = () => {
                   />
                 </svg>
                 <span className="text-sm">
-                  {detailData?.seePost._count.favs}
+                  {detailData?.seePost?._count.favs}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
@@ -131,22 +174,15 @@ const ItemDetail: NextPage = () => {
                   />
                 </svg>
                 <span className="text-sm">
-                  {detailData?.seePost._count.answers}
+                  {detailData?.seePost?._count.answers}
                 </span>
               </div>
             </div>
           </div>
-          <Seperater />
         </main>
       </section>
-      <div className="basis-[70%]">
-        {/*  {userPostData?.userPost.posts && (
-          <PostList
-            userPost={userPostData?.userPost.posts}
-            postCount={userPostData.userPost._count.posts}
-          />
-        )} */}
-      </div>
+      <Seperater />
+      <div className="mt-6 p-4">asdf</div>
     </Layout>
   );
 };
