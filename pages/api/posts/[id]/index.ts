@@ -12,18 +12,6 @@ const handler = async (
     query: { id },
   } = req;
 
-  const isMine = Boolean(
-    await client.post.findFirst({
-      where: {
-        id: +id,
-        userId: user?.id,
-      },
-      select: {
-        id: true,
-      },
-    })
-  );
-
   try {
     if (req.method === "GET") {
       const seePost = await client.post.findUnique({
@@ -72,14 +60,17 @@ const handler = async (
         })
       );
 
-      return res.status(200).json({ ok: true, seePost, isMine, isLiked });
+      return res.status(200).json({ ok: true, seePost, isLiked });
     }
 
     if (req.method === "POST") {
       const {
-        body: { image, comment },
+        body: { imageId, comment },
       } = req;
-      if (isMine) {
+
+      console.log(imageId);
+
+      if (id) {
         const alreadyPost = await client.post.findUnique({
           where: {
             id: +id,
@@ -90,16 +81,19 @@ const handler = async (
             comment: true,
           },
         });
+        console.log(alreadyPost);
+        console.log(imageId);
+
         if (!alreadyPost) {
           return res.status(404).json({ ok: false, error: "Not found post" });
         }
-        if (image && image !== alreadyPost.image) {
+        if (imageId && imageId !== alreadyPost.image) {
           const updateImage = await client.post.update({
             where: {
               id: alreadyPost.id,
             },
             data: {
-              image,
+              image: imageId,
             },
           });
           return res.status(201).json({ ok: true, updateImage });

@@ -35,7 +35,7 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
   };
 
   return (
-    <section className="h-screen ">
+    <section className="h-screen">
       <nav className=" px-4 pt-8 text-sm lg:text-base text-orange-600">
         {goBack ? (
           <>

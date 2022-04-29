@@ -14,6 +14,16 @@ const handler = async (
 
   const pageSize = 5;
   try {
+    const isMine = Boolean(
+      await client.post.findFirst({
+        where: {
+          userId: user?.id,
+        },
+        select: {
+          id: true,
+        },
+      })
+    );
     const postCount = await client.post.count({});
     const posts = await client.post.findMany({
       take: pageSize,
@@ -46,7 +56,7 @@ const handler = async (
       },
     });
 
-    const isLiked = Boolean(
+    /*  const isLiked = Boolean(
       await client.fav.findFirst({
         where: {
           userId: user?.id,
@@ -55,12 +65,12 @@ const handler = async (
           id: true,
         },
       })
-    );
+    ); */
 
     if (!posts) {
       return res.status(404).json({ ok: false, error: "Not found" });
     }
-    return res.status(200).json({ ok: true, posts, postCount, isLiked });
+    return res.status(200).json({ ok: true, posts, postCount, isMine });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Server Not OK" });

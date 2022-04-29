@@ -21,6 +21,7 @@ interface PostResponse {
   ok: boolean;
   posts: ResultsElseWithPost[];
   postCount: number;
+  isMine: boolean;
   error?: string;
 }
 
@@ -37,7 +38,9 @@ const Home: NextPage = () => {
       <Layout goBack={false}>
         {postsData &&
           postsData?.posts?.map((post) => {
-            return <HomePost key={post.id} {...post} />;
+            return (
+              <HomePost key={post.id} {...post} isMine={postsData.isMine} />
+            );
           })}
       </Layout>
       <div

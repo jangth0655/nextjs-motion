@@ -9,32 +9,33 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-interface UploadForm {
+interface EditForm {
   comment: string;
   image: FileList;
 }
 
-interface UploadResponsive {
+interface EditPostResponse {
   ok: boolean;
-
   error?: string;
 }
 
 const UploadPost: NextPage = () => {
   const [imagePreview, setImagePreview] = useState("");
   const router = useRouter();
-  const [createPost, { data: createData, loading: createLoading, error }] =
-    useMutation<UploadResponsive>("/api/posts");
+  const [editPost, { data: editData, loading: editLoading, error }] =
+    useMutation<EditPostResponse>(`/api/posts/${router.query.id}`);
+
+  console.log(router.query.id);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<UploadForm>();
+  } = useForm<EditForm>();
 
-  const onValid = async ({ comment, image }: UploadForm) => {
-    if (createLoading) return;
+  const onValid = async ({ comment, image }: EditForm) => {
+    if (editLoading) return;
     if (image && image.length > 0) {
       const { uploadURL } = await (await fetch("/api/files")).json();
       const form = new FormData();
@@ -47,10 +48,9 @@ const UploadPost: NextPage = () => {
           body: form,
         })
       ).json();
-      console.log(id);
-      createPost({ comment, imageId: id });
+      editPost({ comment, imageId: id });
     } else {
-      createPost({ comment });
+      editPost({ comment });
     }
   };
 
@@ -63,10 +63,10 @@ const UploadPost: NextPage = () => {
   }, [image]);
 
   useEffect(() => {
-    if (createData && createData.ok) {
+    if (editData && editData.ok) {
       router.push("/");
     }
-  }, [createData, router]);
+  }, [editData, router]);
   return (
     <Layout goBack={true} title="Create Post">
       <form
@@ -80,7 +80,7 @@ const UploadPost: NextPage = () => {
                 src={imagePreview}
                 className="bg-cover bg-center cursor-pointer"
                 layout="fill"
-                objectFit="cover"
+                objectFit="contain"
                 alt=""
                 priority
               />
@@ -163,7 +163,7 @@ const UploadPost: NextPage = () => {
               </div>
             )}
             <div className=" mt-10">
-              <Button text="Create" loading={createLoading} />
+              <Button text="edit" loading={editLoading} />
             </div>
           </div>
         </div>

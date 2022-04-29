@@ -16,6 +16,7 @@ interface HomePost extends Post {
     username: string;
     avatar?: string;
   };
+  isMine: boolean;
 }
 
 export interface FavToggle {
@@ -23,7 +24,15 @@ export interface FavToggle {
   error?: string;
 }
 
-const HomePost = ({ _count, userId, comment, user, id, image }: HomePost) => {
+const HomePost = ({
+  _count,
+  userId,
+  comment,
+  user,
+  id,
+  image,
+  isMine,
+}: HomePost) => {
   const [slideConfig, setSlideConfig] = useState(false);
   const router = useRouter();
 
@@ -41,13 +50,17 @@ const HomePost = ({ _count, userId, comment, user, id, image }: HomePost) => {
     router.push(`/posts/${id}`);
   };
 
+  const onEditPost = (id: number) => {
+    router.push(`/posts/${id}/edit`);
+  };
+
   return (
     <>
-      <main className="text-gray-700 p-4 snap-y ">
+      <main className="text-gray-700 p-4 snap-y -z-10">
         <div className=" border-gray-200 p-4 space-y-8 rounded-lg ">
           <div className="flex items-center mb-4 justify-between">
             <div className="flex cursor-pointer relative">
-              <div onClick={() => onSlideConfig(id)}>
+              <div className="z-10" onClick={() => onSlideConfig(id)}>
                 {user.avatar ? (
                   <div className="mr-2 relative w-6 h-6 sm:w-8 sm:h-8">
                     <Image
@@ -79,7 +92,7 @@ const HomePost = ({ _count, userId, comment, user, id, image }: HomePost) => {
                 )}
               </div>
 
-              <div>
+              <div onClick={() => onSlideConfig(id)}>
                 <span className="text-xs">{user.username}</span>
               </div>
 
@@ -119,9 +132,32 @@ const HomePost = ({ _count, userId, comment, user, id, image }: HomePost) => {
                   />
                 </svg>
               </div>
-              <div className="ml-2 text-xs bg-orange-300 p-[2.5px] rounded-md text-white cursor-pointer hover:bg-orange-500 transition-all">
-                <span>Edit Post</span>
-              </div>
+              {isMine ? (
+                <>
+                  <div
+                    onClick={() => onEditPost(id)}
+                    className="ml-2 text-xs bg-orange-300 px-[2px] rounded-md text-white cursor-pointer hover:bg-orange-500 transition-all flex justify-center items-center"
+                  >
+                    <span>Edit Post</span>
+                  </div>
+                  <div
+                    onClick={() => onEditPost(id)}
+                    className="ml-2 text-xs p-[2.5px] rounded-md text-pink-300 cursor-pointer hover:text-pink-500 transition-all"
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </>
+              ) : null}
             </div>
           </div>
 

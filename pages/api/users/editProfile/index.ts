@@ -19,7 +19,6 @@ const handler = async (
         id: user?.id,
       },
     });
-    console.log(req.body.id);
 
     if (id) {
       await client.user.update({
