@@ -7,12 +7,16 @@ interface FavWithCommentCountProps {
     favs?: number;
     answers?: number;
   };
+  favCount?: number;
+  postCount?: number;
 }
 
 const FavWithCommentCount = ({
   _count,
   favToggleBtn,
   isLiked,
+  favCount,
+  postCount,
 }: FavWithCommentCountProps) => {
   return (
     <div className="flex items-center space-x-4">
@@ -53,7 +57,7 @@ const FavWithCommentCount = ({
             />
           </svg>
         )}
-        <span className="text-sm">{_count?.favs}</span>
+        <span className="text-sm">{_count?.favs || favCount}</span>
       </div>
       <div className="flex items-center space-x-2">
         <svg
@@ -67,7 +71,7 @@ const FavWithCommentCount = ({
             clipRule="evenodd"
           />
         </svg>
-        <span className="text-sm">{_count?.answers}</span>
+        <span className="text-sm">{_count?.answers || postCount}</span>
       </div>
     </div>
   );

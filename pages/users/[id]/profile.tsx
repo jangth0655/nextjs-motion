@@ -1,52 +1,60 @@
 import Error from "@components/errors";
 import Input from "@components/input";
 import Layout from "@components/layout";
-import PostList from "@components/postSlider";
+import PostList from "@components/postList";
+import PostSlider from "@components/postSlider";
 import Seperater from "@components/seperater";
 import { deliveryFile } from "@libs/client/deliveryFIle";
 import { Post, User } from "@prisma/client";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import useSWR from "swr";
 
-interface ElseWithUser extends User {
-  _count: {
-    favs: number;
-    posts: number;
-  };
+type Counts = {
+  favs: number;
+  posts: number;
+  answers: number;
+};
+
+interface UserPostData extends User {
   posts: Post[];
+  _count: Counts;
 }
 
-interface UserWithFavAndPostCount {
+interface UserPost {
   ok: boolean;
-  error: string;
-  me: ElseWithUser;
+  error?: string;
+  userPost: UserPostData;
 }
 
 const Profile: NextPage = () => {
   const router = useRouter();
+  const [postPage, setPostPage] = useState(1 || undefined);
+  const [isBack, setIsBack] = useState(false);
+  const { data: userPostData } = useSWR<UserPost>(
+    router.query.id && `/api/posts/${router.query.id}/userPost?page=${postPage}`
+  );
 
-  const { data: userData } = useSWR<UserWithFavAndPostCount>("/api/users/me");
-  console.log(userData);
+  console.log(postPage);
 
   useEffect(() => {
-    if (userData && !userData.ok) {
+    if (userPostData && !userPostData.ok) {
       router.replace("/");
     }
-  }, [userData, router]);
+  }, [userPostData, router]);
 
   return (
     <Layout goBack={true}>
       <section className="text-gray-700 p-4">
-        {userData?.me.avatar ? (
+        {userPostData?.userPost?.avatar ? (
           <div className=" px-6 flex items-center">
             <div className="flex flex-col items-center mr-4 ">
               <div className="relative w-40 h-40  mb-2 ">
                 <Image
-                  src={deliveryFile(userData?.me.avatar)}
+                  src={deliveryFile(userPostData?.userPost?.avatar)}
                   className=" rounded-full  border-dotted  mr-5 flex justify-center items-center"
                   objectFit="cover"
                   layout="fill"
@@ -55,7 +63,7 @@ const Profile: NextPage = () => {
                 />
               </div>
               <div className="text-center text-lg ">
-                <span>{userData?.me.username}</span>
+                <span>{userPostData?.userPost?.username}</span>
               </div>
             </div>
             <div className="space-y-2">
@@ -88,7 +96,7 @@ const Profile: NextPage = () => {
                   />
                 </svg>
                 <span className="text-sm text-gray-400">
-                  {userData?.me._count?.favs ?? 0}
+                  {userPostData?.userPost?._count?.favs ?? 0}
                 </span>
               </div>
 
@@ -108,7 +116,7 @@ const Profile: NextPage = () => {
               </div>
               <div className="flex items-center text-sm">
                 <span className="block mr-2 text-gray-400">Post_Count</span>
-                <span>{userData?.me._count?.posts ?? 0}</span>
+                <span>{userPostData?.userPost?._count?.posts ?? 0}</span>
               </div>
               <div className="flex items-center text-sm">
                 <span className="block mr-2 text-gray-400">
@@ -126,7 +134,7 @@ const Profile: NextPage = () => {
                     />
                   </svg>
                 </span>
-                <span>{userData?.me.email}</span>
+                <span>{userPostData?.userPost?.email}</span>
               </div>
             </div>
           </div>
@@ -160,13 +168,13 @@ const Profile: NextPage = () => {
                   />
                 </svg>
                 <span className="text-sm text-gray-400">
-                  {userData?.me._count?.favs ?? 0}
+                  {userPostData?.userPost?._count?.favs ?? 0}
                 </span>
               </div>
 
               <div className="flex items-center cursor-pointer">
                 <svg
-                  className="h-5 w-5 text-gray-500"
+                  className="h-5 w-5 text-gray-500 mr-2 "
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -180,12 +188,29 @@ const Profile: NextPage = () => {
               </div>
               <div className="flex items-center text-sm">
                 <span className="block mr-2 text-gray-400">Poster</span>
-                <span>{userData?.me._count?.posts ?? 0}</span>
+                <span>{userPostData?.userPost?._count?.posts ?? 0}</span>
               </div>
             </div>
           </div>
         )}
         <Seperater />
+        {userPostData ? (
+          <div className="mt-4">
+            <div className="text-center">
+              <span>history</span>
+            </div>
+            <PostSlider
+              favCount={userPostData.userPost?._count.favs}
+              postCount={userPostData.userPost?._count.posts}
+              userAvatar={userPostData.userPost?.avatar}
+              userName={userPostData.userPost?.username}
+              userPost={userPostData.userPost?.posts}
+              setPostPage={setPostPage}
+            />
+          </div>
+        ) : (
+          <div></div>
+        )}
       </section>
     </Layout>
   );

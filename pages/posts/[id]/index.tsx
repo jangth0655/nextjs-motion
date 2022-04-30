@@ -146,8 +146,6 @@ const ItemDetail: NextPage = () => {
     }
   }, [answersData, reset]);
 
-  console.log(detailData);
-
   return (
     <Layout goBack={true}>
       <div>{userPostData?.error && <Error text="Please log in" />}</div>

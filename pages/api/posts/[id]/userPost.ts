@@ -3,24 +3,31 @@ import withHandler, { ResponseType } from "@libs/server/withHandler";
 import { withSession } from "@libs/server/withSession";
 import { NextApiRequest, NextApiResponse } from "next";
 
+const pageSize = 1;
+const initialPage = 1;
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
 ) => {
   const {
-    query: { userId },
+    query: { id, page = initialPage },
   } = req;
 
   try {
     const userPost = await client.user.findUnique({
       where: {
-        id: +userId,
+        id: +id,
       },
       include: {
-        posts: true,
+        posts: {
+          take: pageSize,
+          skip: (+page - 1) * pageSize,
+        },
         _count: {
           select: {
             posts: true,
+            favs: true,
+            answers: true,
           },
         },
       },
