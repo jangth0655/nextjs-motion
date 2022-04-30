@@ -1,7 +1,7 @@
 import Error from "@components/errors";
 import Input from "@components/input";
 import Layout from "@components/layout";
-import PostList from "@components/postList";
+import PostList from "@components/postSlider";
 import Seperater from "@components/seperater";
 import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
@@ -123,8 +123,8 @@ const Profile: NextPage = () => {
       <section className="text-gray-700 p-4">
         {avatarPreview ? (
           <div className=" px-6 flex items-center">
-            <div className="mb-10">
-              <div className="relative w-40 h-40  mr-4 mb-4">
+            <div className="mb-10 mr-4 ">
+              <div className="relative w-40 h-40  mb-4">
                 <Image
                   src={avatarPreview}
                   className=" rounded-full  border-dotted  mr-5 flex justify-center items-center"
@@ -348,8 +348,10 @@ const Profile: NextPage = () => {
         <Seperater />
       </section>
       <div className="">
-        {userData?.me.posts && (
+        {userData?.me && (
           <PostList
+            userName={userData?.me.username}
+            userAvatar={userData?.me.avatar}
             userPost={userData?.me.posts}
             postCount={userData.me._count.posts}
           />

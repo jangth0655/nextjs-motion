@@ -10,9 +10,11 @@ const handler = async (
   try {
     const {
       body,
-      query: { id },
+      query: { id, page = 1 },
       session: { user },
     } = req;
+
+    const pageSize = 5;
     // 해당id의 post가 있는지 확인
     const isPost = await client.post.findUnique({
       where: {
@@ -28,7 +30,7 @@ const handler = async (
     // 해당 포스터에 로그인된 유저가 create answer
     const answer = await client.answer.create({
       data: {
-        answer: body.answer,
+        answer: body.comment,
         post: {
           connect: {
             id: +id,

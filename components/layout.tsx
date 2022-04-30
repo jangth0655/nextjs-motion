@@ -18,7 +18,7 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
   };
 
   const onProfile = () => {
-    router.push("/users/profile");
+    router.push("/users/editProfile");
   };
 
   const onHome = () => {

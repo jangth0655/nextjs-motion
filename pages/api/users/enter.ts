@@ -58,14 +58,6 @@ const handler = async (
         },
       },
     });
-    /*  const sendingToken = await mail.send({
-      from: "jangth0655@naver.com",
-      to: email,
-      subject: "Your Motion app Verification Email",
-      text: `Your token is ${payload}`,
-      html: `<strong>Your token is ${payload}</strong>`,
-    });
-    console.log(sendingToken); */
 
     return res.status(201).json({ ok: true, token });
   } catch (error) {

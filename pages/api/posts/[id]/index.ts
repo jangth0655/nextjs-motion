@@ -9,25 +9,28 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { id, post },
+    query: { id, post, page },
   } = req;
 
-  if (post) {
-    const postContent = await client.post.findUnique({
-      where: {
-        id: +id,
-      },
-      select: {
-        comment: true,
-        image: true,
-        id: true,
-      },
-    });
-    return res.json({ ok: true, postContent });
-  }
+  console.log(req.query);
 
   try {
     if (req.method === "GET") {
+      if (post) {
+        const postContent = await client.post.findUnique({
+          where: {
+            id: +id,
+          },
+          select: {
+            comment: true,
+            image: true,
+            id: true,
+          },
+        });
+        return res.json({ ok: true, postContent });
+      }
+
+      const pageSize = 3;
       const seePost = await client.post.findUnique({
         where: {
           id: +id,
@@ -49,6 +52,8 @@ const handler = async (
           answers: {
             select: {
               answer: true,
+              id: true,
+              createdAt: true,
               user: {
                 select: {
                   id: true,
@@ -58,6 +63,8 @@ const handler = async (
                 },
               },
             },
+            take: pageSize,
+            skip: (+page - 1) * pageSize,
           },
         },
       });
@@ -81,8 +88,6 @@ const handler = async (
       const {
         body: { imageId, comment },
       } = req;
-
-      console.log(imageId);
 
       if (id) {
         const alreadyPost = await client.post.findUnique({

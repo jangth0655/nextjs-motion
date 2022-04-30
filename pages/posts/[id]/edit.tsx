@@ -88,8 +88,8 @@ const UploadPost: NextPage = () => {
 
   useEffect(() => {
     if (!postPreview) return;
-    postPreview?.postContent.comment &&
-      setValue("comment", postPreview.postContent.comment);
+    postPreview?.postContent?.comment &&
+      setValue("comment", postPreview?.postContent?.comment);
     postPreview?.postContent?.image &&
       setImagePreview(deliveryFile(postPreview?.postContent?.image));
   }, [postPreview, setValue]);
@@ -201,7 +201,7 @@ const UploadPost: NextPage = () => {
 
             {removeLoading
               ? "Loading"
-              : postPreview?.postContent.id && (
+              : postPreview?.postContent?.id && (
                   <div
                     onClick={() => onRemovePost(postPreview?.postContent.id)}
                     className="flex justify-center items-center mt-5 p-[2.5px] rounded-md text-pink-300 cursor-pointer hover:text-pink-500 transition-all"

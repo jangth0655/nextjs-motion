@@ -1,5 +1,9 @@
-import { FavToggle } from "@components/homePost";
+import AvatarSet from "@components/avatarSet";
+import Button from "@components/button";
+import Error from "@components/errors";
+import { FavToggle } from "@components/postList";
 import Layout from "@components/layout";
+import { dateFormat } from "@components/postSlider";
 import Seperater from "@components/seperater";
 import { cls } from "@libs/client/cls";
 import { deliveryFile } from "@libs/client/deliveryFIle";
@@ -8,19 +12,36 @@ import { Post } from "@prisma/client";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { useForm } from "react-hook-form";
+import Message from "@components/message";
+import FavWithCommentCount from "@components/favWithCommentCount";
+
+type AnswerWithFavsCount = {
+  answers: number;
+  favs: number;
+  posts: number;
+};
+
+type AnswerData = {
+  answer: string | number;
+  id: number;
+  user: UserInfo;
+  createdAt: Date;
+};
+
+type UserInfo = {
+  email: string;
+  avatar: string;
+  id: number;
+  username: string;
+};
 
 interface ElseWithPost extends Post {
-  user: {
-    avatar: string;
-    id: number;
-    username: string;
-  };
-  _count: {
-    answers: number;
-    favs: number;
-  };
+  user: UserInfo;
+  _count: AnswerWithFavsCount;
+  answers: AnswerData[];
 }
 
 interface DetailResponse {
@@ -32,25 +53,48 @@ interface DetailResponse {
 
 interface UserPost {
   ok: boolean;
-  userPost: {
+  userPostData: {
+    avatar: string;
+    id: number;
+    username: string;
     posts: Post[];
-    _count: {
-      posts: number;
-    };
+    _count: AnswerWithFavsCount;
   };
+  error?: string;
 }
 
+interface CommentForm {
+  comment: string | number;
+}
+
+interface AnswerResponse {
+  ok: boolean;
+  error?: string;
+}
+
+const initialPage = 1;
 const ItemDetail: NextPage = () => {
+  const [answerPage, setAnswerPage] = useState<number>(1);
+  const { register, handleSubmit, reset } = useForm<CommentForm>();
   const router = useRouter();
   const [togglePost, { loading: togglePostLoading }] = useMutation<FavToggle>(
     `/api/posts/${router.query.id}/fav`
   );
 
   const { data: detailData, mutate } = useSWR<DetailResponse>(
-    router?.query?.id ? `/api/posts/${router?.query?.id}` : ""
+    router?.query?.id
+      ? `/api/posts/${router?.query?.id}?page=${answerPage}`
+      : ""
   );
 
-  const FavToggleBtn = (id?: number) => {
+  const { data: userPostData } = useSWR<UserPost>(
+    `/api/users/me?posts=userPost`
+  );
+
+  const [sendAnswer, { data: answersData, loading: answersLoading }] =
+    useMutation<AnswerResponse>(`/api/posts/${router.query.id}/answers`);
+
+  const favToggleBtn = () => {
     if (togglePostLoading) return;
     if (!detailData) return;
     togglePost({});
@@ -73,46 +117,48 @@ const ItemDetail: NextPage = () => {
     );
   };
 
+  const pageBack = (isBack: boolean) => {
+    isBack === true
+      ? setAnswerPage((prev) =>
+          prev - initialPage === 0 ? initialPage : prev - initialPage
+        )
+      : setAnswerPage((prev) => prev + initialPage);
+  };
+
+  useEffect(() => {
+    if (userPostData && !userPostData.ok) {
+      router.replace("/");
+    }
+  }, [userPostData, router]);
+
   const onSeeProfile = (id: number) => {
     router.push(`/users/${id}/profile`);
   };
 
+  const onValid = (FormValue: CommentForm) => {
+    if (answersLoading) return;
+    sendAnswer(FormValue);
+  };
+
+  useEffect(() => {
+    if (answersData && answersData.ok) {
+      reset();
+    }
+  }, [answersData, reset]);
+
+  console.log(detailData);
+
   return (
     <Layout goBack={true}>
-      <section className="mt-10 text-gray-700 p-4 ">
-        <main className="flex flex-col h-[30rem]  p-4 space-y-8 rounded-lg ">
-          {detailData?.seePost.user && (
+      <div>{userPostData?.error && <Error text="Please log in" />}</div>
+      <section className="text-gray-700 px-4 ">
+        <main className="flex flex-col h-[30rem] p-4 space-y-4 rounded-lg ">
+          {detailData?.seePost?.user && (
             <div
               onClick={() => onSeeProfile(detailData?.seePost?.user?.id)}
               className="flex cursor-pointer"
             >
-              {detailData?.seePost?.user.avatar ? (
-                <div className="mr-2 relative w-6 h-6 sm:w-8 sm:h-8">
-                  <Image
-                    src={deliveryFile(detailData?.seePost?.user?.avatar)}
-                    className="bg-slate-100 rounded-full flex justify-center items-center"
-                    layout="fill"
-                    alt=""
-                    priority
-                  />
-                </div>
-              ) : (
-                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex justify-center items-center border-2 border-orange-200 mr-2">
-                  <svg
-                    className="h-6 w-6 text-orange-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-              )}
+              <AvatarSet avatar={detailData?.seePost?.user.avatar} />
 
               <div>
                 <span className="text-xs">
@@ -123,7 +169,7 @@ const ItemDetail: NextPage = () => {
           )}
 
           {detailData?.seePost?.image && (
-            <div className="relative w-80 h-80 overflow-hidden rounded-lg  border-2">
+            <div className="relative w-64 h-64 overflow-hidden rounded-lg ">
               <Image
                 className=" bg-cover bg-center"
                 src={deliveryFile(detailData?.seePost?.image)}
@@ -136,45 +182,21 @@ const ItemDetail: NextPage = () => {
             </div>
           )}
 
-          <div className="space-y-5">
-            <p className="text-sm">{detailData?.seePost?.comment}</p>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <svg
-                  onClick={() => FavToggleBtn(detailData?.seePost?.id)}
-                  className={cls(
-                    "h-4 w-4  cursor-pointer",
-                    detailData?.isLiked ? "text-pink-500" : "text-gray-400"
-                  )}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
+          <div>
+            <p className="text-sm mb-10">{detailData?.seePost?.comment}</p>
+            <div className="space-y-2">
+              {detailData && (
+                <FavWithCommentCount
+                  _count={detailData.seePost._count}
+                  favToggleBtn={favToggleBtn}
+                  isLiked={detailData.isLiked}
+                />
+              )}
+
+              <div>
                 <span className="text-sm">
-                  {detailData?.seePost?._count.favs}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <svg
-                  className="h-4 w-4 text-gray-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-sm">
-                  {detailData?.seePost?._count.answers}
+                  {detailData?.seePost?.createdAt &&
+                    dateFormat(detailData?.seePost?.createdAt)}
                 </span>
               </div>
             </div>
@@ -182,7 +204,84 @@ const ItemDetail: NextPage = () => {
         </main>
       </section>
       <Seperater />
-      <div className="mt-6 p-4">asdf</div>
+      <div className="w-full mt-2 pb-2 px-2">
+        <div className="mb-1">
+          <span className="text-orange-400">Comment</span>
+        </div>
+        <div className="h-60 mb-4 overflow-y-auto rounded-md">
+          {detailData?.seePost?.answers &&
+            detailData?.seePost?.answers.map((answer) => (
+              <Message key={answer.id} {...answer} />
+            ))}
+        </div>
+        <div className="flex w-full justify-center space-x-2 mb-3">
+          <div
+            onClick={() => pageBack(true)}
+            className="bg-orange-300 text-center text-white cursor-pointer hover:bg-orange-500 transition-all"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </div>
+          <div
+            onClick={() => pageBack(false)}
+            className="bg-orange-300 text-center text-white cursor-pointer hover:bg-orange-500 transition-all"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <form
+          onSubmit={handleSubmit(onValid)}
+          className="w-full justify-center relative"
+        >
+          <textarea
+            {...register("comment", { required: true })}
+            rows={3}
+            className="p-1 px-2 rounded-md w-full text-gray-600
+            focus:border-orange-300 border-[1px] placeholder:text-sm"
+            placeholder="Start Comment"
+          />
+          <Button text="comment" loading={answersLoading} />
+          {/*  <button className="flex absolute right-0 w-[15%] h-full justify-center items-center bg-teal-600 text-teal-100 focus:text-teal-100 focus:bg-teal-400 px-4 rounded-md">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </button> */}
+        </form>
+      </div>
     </Layout>
   );
 };

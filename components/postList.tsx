@@ -1,98 +1,157 @@
-import { cls } from "@libs/client/cls";
+import { deliveryFile } from "@libs/client/deliveryFIle";
 import { Post } from "@prisma/client";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import Seperater from "./seperater";
 import { useState } from "react";
+import { cls } from "@libs/client/cls";
+import { dateFormat } from "./postSlider";
+import AvatarSet from "./avatarSet";
+import FavWithCommentCount from "./favWithCommentCount";
 
-type PostData = {
-  userPost?: Post[];
-  postCount?: number;
-};
+interface PostList extends Post {
+  _count: {
+    answers: number;
+    favs: number;
+  };
+  user: {
+    username: string;
+    avatar?: string;
+  };
+  isMine: boolean;
+}
 
-const OFFSET = 1;
+export interface FavToggle {
+  ok: boolean;
+  error?: string;
+}
 
-export const dateFormat = (date: Date) => {
-  return new Date(date).toLocaleDateString("ko");
-};
+const PostList = ({
+  _count,
+  userId,
+  comment,
+  user,
+  id,
+  image,
+  isMine,
+  createdAt,
+}: PostList) => {
+  const [slideConfig, setSlideConfig] = useState(false);
+  const router = useRouter();
 
-const PostList = ({ userPost, postCount }: PostData) => {
-  const [isBack, setIsBack] = useState(false);
-  const [page, setPage] = useState(0);
-  const onPage = () => {
-    console.log(page);
-
-    if (userPost && postCount) {
-      const totalPost = postCount - 1;
-      const maxPage = Math.floor(totalPost / OFFSET);
-      isBack ? "" : setPage((prev) => (prev === maxPage ? 0 : page + 1));
+  const onSlideConfig = (postId: number) => {
+    if (id === postId) {
+      setSlideConfig((prev) => !prev);
     }
   };
 
-  return (
-    <div className="text-gray-700 mt-8  relative ">
-      <div className="flex items-center justify-center pb-8  h-80">
-        <div className="text-orange-200 w-full flex  justify-between items-center p-4 z-10">
-          <svg
-            className="h-6 w-6 hover:text-orange-400 cursor-pointer transition-all"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
+  const onSeeProfile = (id: number) => {
+    router.push(`/users/${id}/profile`);
+  };
 
-          <svg
-            onClick={onPage}
-            className="h-6 w-6 hover:text-orange-400 cursor-pointer transition-all"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </div>
-        <div className="absolute w-[85%] h-full border-[1px] p-4 rounded-lg border-orange-200">
-          {userPost
-            ?.slice(OFFSET * page, OFFSET * page + OFFSET)
-            .map((post) => (
-              <div className="" key={post.id}>
-                <div className="flex items-center mb-4">
-                  <svg
-                    className="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span className="text-sm">
-                    {post.createdAt && dateFormat(post.createdAt)}
-                  </span>
+  const onItemDetail = (id: number) => {
+    router.push(`/posts/${id}`);
+  };
+
+  const onEditPost = (id: number) => {
+    router.push(`/posts/${id}/edit`);
+  };
+
+  return (
+    <>
+      <main className="text-gray-700 px-2 snap-y">
+        <div className=" border-gray-200 p-2 space-y-8 rounded-lg  -z-10">
+          <div className="flex items-center mb-4 justify-between">
+            <div className="z-50 flex cursor-pointer relative">
+              <div className="z-10" onClick={() => onSlideConfig(id)}>
+                <AvatarSet avatar={user.avatar} />
+              </div>
+
+              <div onClick={() => onSlideConfig(id)}>
+                <span className="text-xs">{user.username}</span>
+              </div>
+
+              <div
+                className={cls(
+                  "text-xs w-full bg-orange-300 absolute -bottom-14 z-10 rounded-md text-orange-100 origin-top transition-all",
+                  slideConfig ? "scale-y-100" : "scale-y-0 "
+                )}
+              >
+                <div
+                  onClick={() => onSeeProfile(userId)}
+                  className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1"
+                >
+                  <span>Profile</span>
                 </div>
-                <div className="h-[50%] bg-orange-300 ">
-                  <div className="" />
-                </div>
-                <div className="h-full">
-                  <p>{post.comment}</p>
+                <div className="h-[1px] w-full bg-orange-100 " />
+                <div className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1">
+                  <span>Chat</span>
                 </div>
               </div>
-            ))}
+            </div>
+
+            <div className="flex">
+              <div
+                onClick={() => onItemDetail(id)}
+                className="px-2 cursor-pointer group"
+              >
+                <svg
+                  className="h-4 w-4 text-gray-500 group-hover:text-orange-400   transition-all"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              {isMine ? (
+                <>
+                  <div
+                    onClick={() => onEditPost(id)}
+                    className="ml-2 text-xs bg-orange-300 px-[2px] rounded-md text-white cursor-pointer hover:bg-orange-500 transition-all flex justify-center items-center"
+                  >
+                    <span>Edit Post</span>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+
+          {image ? (
+            <div className=" relative w-56 h-56 overflow-hidden rounded-lg">
+              <Image
+                src={deliveryFile(image)}
+                className="bg-cover bg-center"
+                objectFit="cover"
+                layout="fill"
+                priority
+              />
+            </div>
+          ) : (
+            <div></div>
+          )}
+
+          <div className="text-sm">
+            <p>{comment}</p>
+          </div>
+
+          <div className="space-y-2">
+            <FavWithCommentCount _count={_count} />
+            <div>
+              <span className="text-sm">
+                {createdAt && dateFormat(createdAt)}
+              </span>
+            </div>
+          </div>
         </div>
+      </main>
+      <div className="mb-4">
+        <Seperater />
       </div>
-    </div>
+    </>
   );
 };
 

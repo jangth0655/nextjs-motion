@@ -1,6 +1,5 @@
-import HomePost from "@components/homePost";
 import Layout from "@components/layout";
-import useUser from "@libs/client/useUser";
+import PostList from "@components/postList";
 import { Post } from "@prisma/client";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -37,11 +36,13 @@ const Home: NextPage = () => {
     <>
       <Layout goBack={false}>
         {postsData &&
-          postsData?.posts?.map((post) => {
-            return (
-              <HomePost key={post.id} {...post} isMine={postsData.isMine} />
-            );
-          })}
+          postsData?.posts
+            ?.map((post) => {
+              return (
+                <PostList key={post.id} {...post} isMine={postsData.isMine} />
+              );
+            })
+            .reverse()}
       </Layout>
       <div
         onClick={onUpload}
