@@ -1,8 +1,7 @@
+import Button from "@components/button";
 import Error from "@components/errors";
 import Input from "@components/input";
 import Layout from "@components/layout";
-import PostList from "@components/postSlider";
-import Seperater from "@components/seperater";
 import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
 import { Post, User } from "@prisma/client";
@@ -41,6 +40,7 @@ interface EditData {
 
 const Profile: NextPage = () => {
   const router = useRouter();
+  const [deleteImageLoading, setDeleteImageLoading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState("");
   const {
     register,
@@ -86,7 +86,7 @@ const Profile: NextPage = () => {
 
   useEffect(() => {
     if (editData && editData.ok) {
-      router.push("/");
+      router.reload();
     }
   }, [editData, router]);
 
@@ -116,7 +116,11 @@ const Profile: NextPage = () => {
   ]);
 
   const removeAvatar = (id: number) => {
+    setDeleteImageLoading(true);
+    console.log(deleteImageLoading);
     editProfile({ id });
+    setDeleteImageLoading(false);
+    console.log(deleteImageLoading);
   };
   return (
     <Layout goBack={true}>
@@ -162,7 +166,7 @@ const Profile: NextPage = () => {
                     onClick={() => removeAvatar(userData?.me.id)}
                     className="flex text-center p-1 bg-orange-300 text-white rounded-lg text-xs cursor-pointer hover:bg-orange-500 transition-all"
                   >
-                    <span>Remove</span>
+                    {deleteImageLoading ? "Loading" : <span>Remove</span>}
                   </div>
                 )}
               </div>
@@ -267,12 +271,9 @@ const Profile: NextPage = () => {
         )}
 
         <div>
-          <form
-            onSubmit={handleSubmit(onValid)}
-            className="p-4 w-full  flex items-center"
-          >
-            <div className="space-y-5 w-[80%]">
-              <div className="w-full flex items-center ">
+          <form onSubmit={handleSubmit(onValid)} className="p-4 w-full">
+            <div className="space-y-5 w-[100%]">
+              <div className="w-full flex items-center">
                 <div className="w-24 mr-3 flex justify-center">
                   <svg
                     className="h-6 w-6 "
@@ -288,11 +289,11 @@ const Profile: NextPage = () => {
                     />
                   </svg>
                 </div>
-
                 <div className="w-full">
                   <Input register={register("email")} type="text" />
                 </div>
               </div>
+
               <div className="w-full flex items-center ">
                 <div className="w-24 mr-3 flex justify-center">
                   <svg
@@ -314,12 +315,16 @@ const Profile: NextPage = () => {
                 </div>
               </div>
             </div>
+
             {errors.formError?.message && (
               <div>
                 <Error text={errors.formError?.message} />
               </div>
             )}
-            <div className="flex justify-center items-center m-auto py-2">
+            <div className="flex mt-6">
+              <Button text="Edit" loading={editLoading} />
+            </div>
+            {/*   <div className="flex justify-center items-center m-auto py-2">
               <button className="py-1 px-5 hover:text-orange-600  hover:transition-all text-orange-400">
                 {editLoading ? (
                   <span className="text-sm uppercase">Loading</span>
@@ -339,24 +344,13 @@ const Profile: NextPage = () => {
                   </svg>
                 )}
               </button>
-            </div>
+            </div> */}
           </form>
           {editError && (
             <div className="mt-3">{<Error text={editError} />}</div>
           )}
         </div>
-        <Seperater />
       </section>
-      <div className="">
-        {userData?.me && (
-          <PostList
-            userName={userData?.me.username}
-            userAvatar={userData?.me.avatar}
-            userPost={userData?.me.posts}
-            postCount={userData.me._count.posts}
-          />
-        )}
-      </div>
     </Layout>
   );
 };

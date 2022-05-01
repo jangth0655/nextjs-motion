@@ -1,4 +1,5 @@
 import Layout from "@components/layout";
+import PageNation from "@components/pageNation";
 import PostList from "@components/postList";
 import { Post } from "@prisma/client";
 import type { NextPage } from "next";
@@ -26,15 +27,15 @@ interface PostResponse {
 }
 
 const initialPage = 1;
+export const pageSize = 5;
 
 const Home: NextPage = () => {
   const [page, setPage] = useState(1);
   const { data: postsData } = useSWR<PostResponse>(
     `/api/posts/seePosts?page=${page}`
   );
-  const router = useRouter();
 
-  console.log(page);
+  const router = useRouter();
 
   const onUpload = () => {
     router.push("/posts/upload");
@@ -59,44 +60,9 @@ const Home: NextPage = () => {
               );
             })
             .reverse()}
-        <div className="flex w-full justify-center space-x-2 pb-2">
-          <div
-            onClick={() => pageBack(true)}
-            className="bg-orange-300 text-center text-white cursor-pointer hover:bg-orange-500 transition-all"
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </div>
-          <div
-            onClick={() => pageBack(false)}
-            className="bg-orange-300 text-center text-white cursor-pointer hover:bg-orange-500 transition-all"
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
-        </div>
+        {postsData?.posts && postsData?.posts?.length > pageSize ? (
+          <PageNation pageBack={pageBack} />
+        ) : null}
       </Layout>
       <div
         onClick={onUpload}

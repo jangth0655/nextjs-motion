@@ -12,13 +12,20 @@ interface AnswerData {
     avatar?: string;
     email: string;
   };
+  reverse?: boolean;
 }
 
-export default function Message({ answer, createdAt, id, user }: AnswerData) {
+export default function Comment({
+  answer,
+  createdAt,
+  id,
+  user,
+  reverse,
+}: AnswerData) {
   return (
     <main className="p-1 mb-6 mt-2">
       <div className=" flex items-center text-gray-700 text-sm ">
-        <div>
+        <div className="mr-1">
           <AvatarSet avatar={user.avatar} />
         </div>
         <div className="space-y-2">

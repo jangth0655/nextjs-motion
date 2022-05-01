@@ -10,15 +10,15 @@ import AvatarSet from "./avatarSet";
 import FavWithCommentCount from "./favWithCommentCount";
 
 interface PostList extends Post {
-  _count: {
+  _count?: {
     answers: number;
     favs: number;
   };
-  user: {
-    username: string;
+  user?: {
+    username?: string;
     avatar?: string;
   };
-  isMine: boolean;
+  isMine?: boolean;
 }
 
 export interface FavToggle {
@@ -57,6 +57,10 @@ const PostList = ({
     router.push(`/posts/${id}/edit`);
   };
 
+  const onChat = (id: number) => {
+    router.push(`/chats/${id}`);
+  };
+
   return (
     <>
       <main className="text-gray-700 px-2 snap-y">
@@ -64,11 +68,11 @@ const PostList = ({
           <div className="flex items-center mb-4 justify-between">
             <div className="z-50 flex cursor-pointer relative">
               <div className="z-10" onClick={() => onSlideConfig(id)}>
-                <AvatarSet avatar={user.avatar} />
+                <AvatarSet avatar={user?.avatar} />
               </div>
 
               <div onClick={() => onSlideConfig(id)}>
-                <span className="text-xs">{user.username}</span>
+                <span className="text-xs">{user?.username}</span>
               </div>
 
               <div
@@ -84,7 +88,10 @@ const PostList = ({
                   <span>Profile</span>
                 </div>
                 <div className="h-[1px] w-full bg-orange-100 " />
-                <div className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1">
+                <div
+                  onClick={() => onChat(userId)}
+                  className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1"
+                >
                   <span>Chat</span>
                 </div>
               </div>

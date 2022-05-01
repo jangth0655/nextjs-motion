@@ -1,4 +1,3 @@
-import useUser from "@libs/client/useUser";
 import { useRouter } from "next/router";
 import React from "react";
 import useSWR from "swr";
@@ -9,8 +8,16 @@ interface LayoutProps {
   title?: string;
 }
 
+interface UserData {
+  ok: boolean;
+  me: {
+    id: number;
+    username: string;
+  };
+}
+
 const Layout = ({ children, goBack = false, title }: LayoutProps) => {
-  const { data: userData } = useSWR("/api/users/loginUser");
+  const { data: userData } = useSWR<UserData>("/api/users/loginUser");
 
   const router = useRouter();
   const onLogin = () => {
@@ -35,7 +42,7 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
   };
 
   return (
-    <section className="h-screen">
+    <section className="h-screen relative">
       <nav className=" px-4 pt-8 text-sm lg:text-base text-orange-600">
         {goBack ? (
           <>
@@ -157,7 +164,9 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
                       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
-                  <span>username</span>
+                  {userData.me?.username ? (
+                    <span>{userData.me.username}</span>
+                  ) : null}
                 </div>
               </div>
             </div>

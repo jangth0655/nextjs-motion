@@ -15,8 +15,10 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { useForm } from "react-hook-form";
-import Message from "@components/message";
+
 import FavWithCommentCount from "@components/favWithCommentCount";
+import PageNation from "@components/pageNation";
+import Comment from "@components/comment";
 
 type AnswerWithFavsCount = {
   answers: number;
@@ -209,47 +211,10 @@ const ItemDetail: NextPage = () => {
         <div className="h-60 mb-4 overflow-y-auto rounded-md">
           {detailData?.seePost?.answers &&
             detailData?.seePost?.answers.map((answer) => (
-              <Message key={answer.id} {...answer} />
+              <Comment key={answer.id} {...answer} />
             ))}
         </div>
-        <div className="flex w-full justify-center space-x-2 mb-3">
-          <div
-            onClick={() => pageBack(true)}
-            className="bg-orange-300 text-center text-white cursor-pointer hover:bg-orange-500 transition-all"
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </div>
-          <div
-            onClick={() => pageBack(false)}
-            className="bg-orange-300 text-center text-white cursor-pointer hover:bg-orange-500 transition-all"
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
-        </div>
+        <PageNation pageBack={pageBack} />
 
         <form
           onSubmit={handleSubmit(onValid)}

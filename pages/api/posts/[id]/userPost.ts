@@ -3,7 +3,7 @@ import withHandler, { ResponseType } from "@libs/server/withHandler";
 import { withSession } from "@libs/server/withSession";
 import { NextApiRequest, NextApiResponse } from "next";
 
-const pageSize = 1;
+const pageSize = 5;
 const initialPage = 1;
 const handler = async (
   req: NextApiRequest,

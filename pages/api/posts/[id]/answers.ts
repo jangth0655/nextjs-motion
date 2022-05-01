@@ -10,11 +10,10 @@ const handler = async (
   try {
     const {
       body,
-      query: { id, page = 1 },
+      query: { id },
       session: { user },
     } = req;
 
-    const pageSize = 5;
     // 해당id의 post가 있는지 확인
     const isPost = await client.post.findUnique({
       where: {

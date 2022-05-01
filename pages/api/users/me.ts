@@ -9,7 +9,7 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { posts, page = 1 },
+    query: { posts, page = 1, home },
   } = req;
   const pageSize = 5;
 

@@ -57,7 +57,11 @@ const FavWithCommentCount = ({
             />
           </svg>
         )}
-        <span className="text-sm">{_count?.favs || favCount}</span>
+        {_count?.favs || favCount ? (
+          <span className="text-sm">{_count?.favs || favCount}</span>
+        ) : (
+          <span className="text-sm">0</span>
+        )}
       </div>
       <div className="flex items-center space-x-2">
         <svg
@@ -71,7 +75,11 @@ const FavWithCommentCount = ({
             clipRule="evenodd"
           />
         </svg>
-        <span className="text-sm">{_count?.answers || postCount}</span>
+        {_count?.answers || postCount ? (
+          <span className="text-sm">{_count?.answers || postCount}</span>
+        ) : (
+          <span className="text-sm">0</span>
+        )}
       </div>
     </div>
   );

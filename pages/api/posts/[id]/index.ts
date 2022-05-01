@@ -12,8 +12,6 @@ const handler = async (
     query: { id, post, page },
   } = req;
 
-  console.log(req.query);
-
   try {
     if (req.method === "GET") {
       if (post) {

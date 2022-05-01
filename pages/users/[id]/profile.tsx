@@ -24,7 +24,7 @@ interface UserPostData extends User {
   _count: Counts;
 }
 
-interface UserPost {
+export interface UserPost {
   ok: boolean;
   error?: string;
   userPost: UserPostData;
@@ -32,13 +32,14 @@ interface UserPost {
 
 const Profile: NextPage = () => {
   const router = useRouter();
-  const [postPage, setPostPage] = useState(1 || undefined);
-  const [isBack, setIsBack] = useState(false);
+  //const [postPage, setPostPage] = useState(1 || undefined);
   const { data: userPostData } = useSWR<UserPost>(
-    router.query.id && `/api/posts/${router.query.id}/userPost?page=${postPage}`
+    router.query.id && `/api/posts/${router.query.id}/userPost`
   );
 
-  console.log(postPage);
+  const onHistory = () => {
+    router.push(`/users/${router.query.id}/history`);
+  };
 
   useEffect(() => {
     if (userPostData && !userPostData.ok) {
@@ -196,8 +197,16 @@ const Profile: NextPage = () => {
         <Seperater />
         {userPostData ? (
           <div className="mt-4">
-            <div className="text-center">
-              <span>history</span>
+            <div className="text-center flex justify-between items-center space-y-2 w-full">
+              <span className="text-orange-500">History</span>
+              <div
+                onClick={onHistory}
+                className="flex justify-center items-center"
+              >
+                <span className="px-2 rounded-md text-orange-100 bg-orange-300 hover:bg-orange-500 transition-all cursor-pointer ">
+                  more
+                </span>
+              </div>
             </div>
             <PostSlider
               favCount={userPostData.userPost?._count.favs}
@@ -205,7 +214,6 @@ const Profile: NextPage = () => {
               userAvatar={userPostData.userPost?.avatar}
               userName={userPostData.userPost?.username}
               userPost={userPostData.userPost?.posts}
-              setPostPage={setPostPage}
             />
           </div>
         ) : (

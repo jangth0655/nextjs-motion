@@ -11,10 +11,6 @@ const handler = async (
     session: { user },
   } = req;
 
-  if (!user) {
-    return res.status(404).send({ ok: false, error: "Not found" });
-  }
-
   try {
     const me = await client.user.findUnique({
       where: {
@@ -22,10 +18,11 @@ const handler = async (
       },
       select: {
         id: true,
+        username: true,
       },
     });
     if (!me) {
-      return res.status(404).send({ ok: false, error: "Not found" });
+      return res.send({ ok: false });
     }
 
     return res.status(200).json({ ok: true, me });
