@@ -2,7 +2,7 @@ import { deliveryFile } from "@libs/client/deliveryFIle";
 import Image from "next/image";
 
 interface Avatar {
-  avatar?: string;
+  avatar?: string | null;
 }
 
 const AvatarSet = ({ avatar }: Avatar) => {

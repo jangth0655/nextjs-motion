@@ -19,6 +19,9 @@ const handler = async (
       const rooms = await client.room.findMany({
         take: pageSize,
         skip: (+page - 1) * pageSize,
+        select: {
+          id: true,
+        },
       });
       if (!rooms) {
         return res
@@ -52,7 +55,7 @@ const handler = async (
             },
           },
         });
-        return res.status(201).json({ ok: true });
+        return res.status(201).json({ ok: true, room });
       } else if (roomId) {
         const existsRoom = await client.room.findUnique({
           where: {

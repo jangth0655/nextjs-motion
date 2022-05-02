@@ -1,7 +1,4 @@
-import Error from "@components/errors";
-import Input from "@components/input";
 import Layout from "@components/layout";
-import PostList from "@components/postList";
 import PostSlider from "@components/postSlider";
 import Seperater from "@components/seperater";
 import { deliveryFile } from "@libs/client/deliveryFIle";
@@ -9,7 +6,7 @@ import { Post, User } from "@prisma/client";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import useSWR from "swr";
 
@@ -32,7 +29,6 @@ export interface UserPost {
 
 const Profile: NextPage = () => {
   const router = useRouter();
-  //const [postPage, setPostPage] = useState(1 || undefined);
   const { data: userPostData } = useSWR<UserPost>(
     router.query.id && `/api/posts/${router.query.id}/userPost`
   );

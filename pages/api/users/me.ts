@@ -9,51 +9,16 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { posts, page = 1, home },
+    query: { page = 1 },
   } = req;
   const pageSize = 5;
+  //console.log(myRoom);
 
   if (!user) {
     return res.status(404).send({ ok: false, error: "Not found" });
   }
 
   try {
-    if (posts) {
-      const userPostData = await client.user.findUnique({
-        where: {
-          id: user?.id,
-        },
-        select: {
-          avatar: true,
-          username: true,
-          id: true,
-          email: true,
-          posts: {
-            take: pageSize,
-            skip: (+page - 1) * pageSize,
-            select: {
-              comment: true,
-              id: true,
-              image: true,
-              createdAt: true,
-            },
-          },
-          _count: {
-            select: {
-              favs: true,
-              posts: true,
-              answers: true,
-            },
-          },
-        },
-      });
-      if (!userPostData) {
-        return res.status(404).send({ ok: false, error: "Not found" });
-      }
-
-      return res.status(200).json({ ok: true, userPostData });
-    }
-
     const me = await client.user.findUnique({
       where: {
         id: user?.id,

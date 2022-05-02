@@ -5,6 +5,12 @@ import useSWR from "swr";
 
 interface UserProfile {
   ok: boolean;
+  me: {
+    id: number;
+    username: string;
+    email: string;
+    avatar?: string;
+  };
   error: string;
 }
 
@@ -18,5 +24,5 @@ export default function useUser() {
     }
   }, [router, data]);
 
-  return { ok: data?.ok, userData: data, isLoading: !data && !error };
+  return { ok: data?.ok, data: data?.me, isLoading: !data && !error };
 }

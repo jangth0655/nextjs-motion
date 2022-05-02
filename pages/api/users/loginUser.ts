@@ -19,6 +19,8 @@ const handler = async (
       select: {
         id: true,
         username: true,
+        email: true,
+        avatar: true,
       },
     });
     if (!me) {

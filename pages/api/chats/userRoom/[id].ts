@@ -11,15 +11,18 @@ const handler = async (
     session: { user },
     query: { id },
   } = req;
-  console.log(req.query);
 
   try {
     const room = await client.room.findFirst({
       where: {
-        id: +id,
+        users: {
+          some: {
+            id: +id,
+          },
+        },
       },
       select: {
-        chats: true,
+        id: true,
         users: {
           select: {
             username: true,
@@ -29,8 +32,9 @@ const handler = async (
         },
       },
     });
+
     if (!room) {
-      return res.status(404).json({ ok: false, error: "Room does not exist" });
+      return res.json({ ok: false });
     }
     return res.status(200).json({ ok: true, room });
   } catch (error) {

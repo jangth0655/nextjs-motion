@@ -1,11 +1,10 @@
 import AvatarSet from "@components/avatarSet";
 import Button from "@components/button";
 import Error from "@components/errors";
-import { FavToggle } from "@components/postList";
+import { FavToggle } from "@components/postItem";
 import Layout from "@components/layout";
 import { dateFormat } from "@components/postSlider";
 import Seperater from "@components/seperater";
-import { cls } from "@libs/client/cls";
 import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
 import { Post } from "@prisma/client";
@@ -48,21 +47,10 @@ interface ElseWithPost extends Post {
 
 interface DetailResponse {
   ok: boolean;
+  error?: string;
   isMine: boolean;
   seePost: ElseWithPost;
   isLiked: boolean;
-}
-
-interface UserPost {
-  ok: boolean;
-  userPostData: {
-    avatar: string;
-    id: number;
-    username: string;
-    posts: Post[];
-    _count: AnswerWithFavsCount;
-  };
-  error?: string;
 }
 
 interface CommentForm {
@@ -87,10 +75,6 @@ const ItemDetail: NextPage = () => {
     router?.query?.id
       ? `/api/posts/${router?.query?.id}?page=${answerPage}`
       : ""
-  );
-
-  const { data: userPostData } = useSWR<UserPost>(
-    `/api/users/me?posts=userPost`
   );
 
   const [sendAnswer, { data: answersData, loading: answersLoading }] =
@@ -128,10 +112,10 @@ const ItemDetail: NextPage = () => {
   };
 
   useEffect(() => {
-    if (userPostData && !userPostData.ok) {
+    if (detailData && !detailData.ok) {
       router.replace("/");
     }
-  }, [userPostData, router]);
+  }, [detailData, router]);
 
   const onSeeProfile = (id: number) => {
     router.push(`/users/${id}/profile`);
@@ -150,7 +134,7 @@ const ItemDetail: NextPage = () => {
 
   return (
     <Layout goBack={true}>
-      <div>{userPostData?.error && <Error text="Please log in" />}</div>
+      <div>{detailData?.error && <Error text="Please log in" />}</div>
       <section className="text-gray-700 px-4 ">
         <main className="flex flex-col h-[30rem] p-4 space-y-4 rounded-lg ">
           {detailData?.seePost?.user && (

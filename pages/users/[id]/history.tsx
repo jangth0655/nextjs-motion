@@ -1,6 +1,6 @@
 import Layout from "@components/layout";
 import PageNation from "@components/pageNation";
-import PostList from "@components/postList";
+import PostItem from "@components/postItem";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -37,7 +37,7 @@ const UserHistory: NextPage = () => {
     <Layout goBack={true}>
       <section>
         {userPostData?.userPost?.posts.map((post) => (
-          <PostList key={post.id} {...post} user={user} />
+          <PostItem key={post.id} {...post} user={user} />
         ))}
       </section>
       <PageNation pageBack={pageBack} />

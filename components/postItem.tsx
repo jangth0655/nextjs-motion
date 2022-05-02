@@ -3,11 +3,13 @@ import { Post } from "@prisma/client";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Seperater from "./seperater";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cls } from "@libs/client/cls";
 import { dateFormat } from "./postSlider";
 import AvatarSet from "./avatarSet";
 import FavWithCommentCount from "./favWithCommentCount";
+import useMutation from "@libs/client/mutation";
+import useSWR from "swr";
 
 interface PostList extends Post {
   _count?: {
@@ -26,7 +28,22 @@ export interface FavToggle {
   error?: string;
 }
 
-const PostList = ({
+interface RoomConfirm {
+  ok: boolean;
+  room: {
+    id: number;
+  };
+  error?: string;
+}
+
+interface RoomMutation {
+  ok: boolean;
+  room: {
+    id: number;
+  };
+}
+
+const PostItem = ({
   _count,
   userId,
   comment,
@@ -36,6 +53,8 @@ const PostList = ({
   isMine,
   createdAt,
 }: PostList) => {
+  const [loadingRoom, setLoadingRoom] = useState(false);
+  const [selectUserId, setSelectUserId] = useState<number>();
   const [slideConfig, setSlideConfig] = useState(false);
   const router = useRouter();
 
@@ -44,6 +63,13 @@ const PostList = ({
       setSlideConfig((prev) => !prev);
     }
   };
+
+  const { data: roomConfirm } = useSWR<RoomConfirm>(
+    selectUserId ? `/api/chats/userRoom/${selectUserId}` : null
+  );
+
+  const [makeRoom, { data, loading: makeRoomLoading }] =
+    useMutation<RoomMutation>(`/api/chats?userId=${selectUserId}`);
 
   const onSeeProfile = (id: number) => {
     router.push(`/users/${id}/profile`);
@@ -57,8 +83,20 @@ const PostList = ({
     router.push(`/posts/${id}/edit`);
   };
 
+  useEffect(() => {
+    roomConfirm ? setLoadingRoom(false) : setLoadingRoom(true);
+  }, [roomConfirm]);
+
   const onChat = (id: number) => {
-    router.push(`/chats/${id}`);
+    userId === id ? setSelectUserId(id) : null;
+    console.log(roomConfirm);
+    if (selectUserId && roomConfirm && !roomConfirm?.ok) {
+      makeRoom(null);
+      router.push(`/chats/user/${id}`);
+    }
+    if (selectUserId && roomConfirm && roomConfirm?.ok) {
+      router.push(`/chats/user/${id}`);
+    }
   };
 
   return (
@@ -90,9 +128,9 @@ const PostList = ({
                 <div className="h-[1px] w-full bg-orange-100 " />
                 <div
                   onClick={() => onChat(userId)}
-                  className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1"
+                  className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1 "
                 >
-                  <span>Chat</span>
+                  {makeRoomLoading ? <span>Loading</span> : <span>Chat</span>}
                 </div>
               </div>
             </div>
@@ -162,4 +200,4 @@ const PostList = ({
   );
 };
 
-export default PostList;
+export default PostItem;

@@ -1,6 +1,6 @@
 import Layout from "@components/layout";
 import PageNation from "@components/pageNation";
-import PostList from "@components/postList";
+import PostItem from "@components/postItem";
 import { Post } from "@prisma/client";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -56,7 +56,7 @@ const Home: NextPage = () => {
           postsData?.posts
             ?.map((post) => {
               return (
-                <PostList key={post.id} {...post} isMine={postsData.isMine} />
+                <PostItem key={post.id} {...post} isMine={postsData.isMine} />
               );
             })
             .reverse()}
