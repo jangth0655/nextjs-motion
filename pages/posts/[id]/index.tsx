@@ -62,11 +62,22 @@ interface AnswerResponse {
   error?: string;
 }
 
+type LoggedInUser = {
+  me: {
+    id: number;
+    username: string;
+    email: string;
+    avatar: string;
+  };
+};
+
 const initialPage = 1;
+const ANSWER_SIZE = 3;
 const ItemDetail: NextPage = () => {
   const [answerPage, setAnswerPage] = useState<number>(1);
   const { register, handleSubmit, reset } = useForm<CommentForm>();
   const router = useRouter();
+  const { data: loginUser } = useSWR<LoggedInUser>(`/api/users/loginUser`);
   const [togglePost, { loading: togglePostLoading }] = useMutation<FavToggle>(
     `/api/posts/${router.query.id}/fav`
   );
@@ -108,7 +119,10 @@ const ItemDetail: NextPage = () => {
       ? setAnswerPage((prev) =>
           prev - initialPage === 0 ? initialPage : prev - initialPage
         )
-      : setAnswerPage((prev) => prev + initialPage);
+      : detailData?.seePost.answers &&
+        setAnswerPage((prev) =>
+          prev > detailData?.seePost.answers.length / ANSWER_SIZE ? 1 : prev + 1
+        );
   };
 
   useEffect(() => {
@@ -123,6 +137,26 @@ const ItemDetail: NextPage = () => {
 
   const onValid = (FormValue: CommentForm) => {
     if (answersLoading) return;
+    mutate(
+      (prev) =>
+        prev &&
+        ({
+          ...prev,
+          seePost: {
+            ...prev.seePost,
+            answers: [
+              ...prev.seePost.answers,
+              {
+                id: Date.now(),
+                answer: FormValue.comment,
+                createdAt: dateFormat(new Date()),
+                user: { ...loginUser?.me },
+              },
+            ],
+          },
+        } as any),
+      false
+    );
     sendAnswer(FormValue);
   };
 
@@ -194,11 +228,17 @@ const ItemDetail: NextPage = () => {
         </div>
         <div className="h-60 mb-4 overflow-y-auto rounded-md">
           {detailData?.seePost?.answers &&
-            detailData?.seePost?.answers.map((answer) => (
-              <Comment key={answer.id} {...answer} />
-            ))}
+            detailData?.seePost?.answers.map(
+              (answer) =>
+                router?.query?.id === detailData.seePost.id + "" && (
+                  <Comment key={answer.id} {...answer} />
+                )
+            )}
         </div>
-        <PageNation pageBack={pageBack} />
+        {detailData?.seePost._count.answers &&
+        detailData.seePost._count.answers > ANSWER_SIZE ? (
+          <PageNation pageBack={pageBack} />
+        ) : null}
 
         <form
           onSubmit={handleSubmit(onValid)}

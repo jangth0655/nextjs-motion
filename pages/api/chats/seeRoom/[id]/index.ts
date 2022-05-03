@@ -9,9 +9,10 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { id },
+    query: { id, page },
   } = req;
-  console.log(req.query);
+
+  const pageSize = 10;
 
   try {
     const room = await client.room.findFirst({
@@ -20,6 +21,11 @@ const handler = async (
       },
       select: {
         id: true,
+        _count: {
+          select: {
+            chats: true,
+          },
+        },
         chats: {
           select: {
             payload: true,
@@ -33,6 +39,11 @@ const handler = async (
                 id: true,
               },
             },
+          },
+          take: pageSize,
+          skip: (+page - 1) * pageSize,
+          orderBy: {
+            createdAt: "desc",
           },
         },
         users: {

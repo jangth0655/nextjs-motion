@@ -27,7 +27,6 @@ const PostSlider = ({
   favCount,
 }: PostData) => {
   const router = useRouter();
-  const [isBack, setIsBack] = useState(false);
   const [page, setPage] = useState(0);
 
   const backSlider = (back: boolean) => {

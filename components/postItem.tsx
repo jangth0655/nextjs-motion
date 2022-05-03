@@ -10,6 +10,7 @@ import AvatarSet from "./avatarSet";
 import FavWithCommentCount from "./favWithCommentCount";
 import useMutation from "@libs/client/mutation";
 import useSWR from "swr";
+import Link from "next/link";
 
 interface PostList extends Post {
   _count?: {
@@ -53,24 +54,21 @@ const PostItem = ({
   isMine,
   createdAt,
 }: PostList) => {
-  const [loadingRoom, setLoadingRoom] = useState(false);
-  const [selectUserId, setSelectUserId] = useState<number>();
   const [slideConfig, setSlideConfig] = useState(false);
   const router = useRouter();
-
+  const [currentRoomLoading, setCurrentRoomLoading] = useState(false);
   const onSlideConfig = (postId: number) => {
     if (id === postId) {
       setSlideConfig((prev) => !prev);
     }
   };
 
-  const { data: roomConfirm } = useSWR<RoomConfirm>(
-    selectUserId ? `/api/chats/userRoom/${selectUserId}` : null
+  const { data: currentRoom } = useSWR<RoomConfirm>(
+    userId ? `/api/chats/userRoom/${userId}` : null
   );
 
-  const [makeRoom, { data, loading: makeRoomLoading }] =
-    useMutation<RoomMutation>(`/api/chats?userId=${selectUserId}`);
-
+  const [makeRoom, { data: makeRoomData, loading: makeRoomLoading }] =
+    useMutation<RoomMutation>(`/api/chats?userId=${userId}`);
   const onSeeProfile = (id: number) => {
     router.push(`/users/${id}/profile`);
   };
@@ -84,17 +82,20 @@ const PostItem = ({
   };
 
   useEffect(() => {
-    roomConfirm ? setLoadingRoom(false) : setLoadingRoom(true);
-  }, [roomConfirm]);
+    if (!currentRoom) {
+      setCurrentRoomLoading(true);
+    } else {
+      setCurrentRoomLoading(false);
+    }
+  }, [currentRoom]);
 
   const onChat = (id: number) => {
-    userId === id ? setSelectUserId(id) : null;
-    console.log(roomConfirm);
-    if (selectUserId && roomConfirm && !roomConfirm?.ok) {
+    if (currentRoomLoading) return;
+    if (!currentRoom?.ok && !makeRoomData) {
       makeRoom(null);
       router.push(`/chats/user/${id}`);
     }
-    if (selectUserId && roomConfirm && roomConfirm?.ok) {
+    if (currentRoom && currentRoom?.ok) {
       router.push(`/chats/user/${id}`);
     }
   };
@@ -130,7 +131,7 @@ const PostItem = ({
                   onClick={() => onChat(userId)}
                   className="h-full px-2 flex flex-col items-center justify-center hover:bg-orange-500 rounded-md py-1 "
                 >
-                  {makeRoomLoading ? <span>Loading</span> : <span>Chat</span>}
+                  {makeRoomLoading ? "Loading" : <span>Chat</span>}
                 </div>
               </div>
             </div>

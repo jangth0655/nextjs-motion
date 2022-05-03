@@ -44,6 +44,9 @@ const handler = async (
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     if (!posts) {
       return res.status(404).json({ ok: false, error: "Not found" });

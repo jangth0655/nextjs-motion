@@ -53,13 +53,11 @@ const Home: NextPage = () => {
     <>
       <Layout goBack={false}>
         {postsData &&
-          postsData?.posts
-            ?.map((post) => {
-              return (
-                <PostItem key={post.id} {...post} isMine={postsData.isMine} />
-              );
-            })
-            .reverse()}
+          postsData?.posts?.map((post) => {
+            return (
+              <PostItem key={post.id} {...post} isMine={postsData.isMine} />
+            );
+          })}
         {postsData?.posts && postsData?.posts?.length > pageSize ? (
           <PageNation pageBack={pageBack} />
         ) : null}

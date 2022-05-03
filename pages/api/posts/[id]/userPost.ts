@@ -22,6 +22,9 @@ const handler = async (
         posts: {
           take: pageSize,
           skip: (+page - 1) * pageSize,
+          orderBy: {
+            createdAt: "desc",
+          },
         },
         _count: {
           select: {
