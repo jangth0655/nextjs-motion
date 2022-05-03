@@ -8,7 +8,7 @@ import useUser from "@libs/client/useUser";
 import { Chat, User } from "@prisma/client";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 
@@ -124,14 +124,11 @@ const Chat: NextPage = () => {
         );
   };
 
-  console.log(roomData?.room._count?.chats);
-  //console.log(chatPage);
-
   return (
-    <Layout goBack={true}>
+    <Layout goBack={true} header="Chat">
       <main className="p-2 space-y-4">
         <h2 className="text-2xl font-bold text-gray-900">Live Chat</h2>
-        <div className="h-[60vh] px-1 overflow-y-auto">
+        <div className="h-[60vh] px-1 overflow-y-auto shadow-sm">
           {roomData?.room?.chats &&
             roomData.room?.chats?.map((chat) => (
               <Comment
@@ -151,7 +148,7 @@ const Chat: NextPage = () => {
           <div className="flex relative w-full ">
             <input
               {...register("payload", { required: true })}
-              className="focus:border-2 focus:border-orange-400  w-full border-orange-200 p-2  border-[2px] rounded-md placeholder:text-gray-300 text-gray-500"
+              className="focus:border-2 focus:border-orange-400  w-full  p-2  border-[2px] rounded-md placeholder:text-gray-300 text-gray-500 shadow-md"
             />
 
             <div className="w-[20%] h-full absolute right-0">

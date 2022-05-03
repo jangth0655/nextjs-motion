@@ -45,8 +45,8 @@ const PostSlider = ({
 
   return (
     <div className="text-gray-700 mt-14 relative ">
-      <div className="flex items-center justify-center pb-4  h-80">
-        <div className="text-orange-200 w-full flex absolute justify-between items-center  z-10">
+      <div className="flex items-center justify-center pb-4  h-80 ">
+        <div className="text-orange-200 w-full flex absolute justify-between items-center  z-10 ">
           <svg
             onClick={() => backSlider(true)}
             className="h-6 w-6 hover:text-orange-400 cursor-pointer transition-all"
@@ -76,7 +76,7 @@ const PostSlider = ({
             />
           </svg>
         </div>
-        <div className="absolute w-[80%] h-full  px-4 rounded-lg ">
+        <div className="absolute w-[80%] h-full  px-4 rounded-lg pt-1 shadow-md">
           {userPost
             ?.slice(page * OFFSET, page * OFFSET + OFFSET)
             .map((post) => (

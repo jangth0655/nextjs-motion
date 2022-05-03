@@ -90,7 +90,6 @@ const PostItem = ({
   }, [currentRoom]);
 
   const onChat = (id: number) => {
-    if (currentRoomLoading) return;
     if (!currentRoom?.ok && !makeRoomData) {
       makeRoom(null);
       router.push(`/chats/user/${id}`);
@@ -102,7 +101,7 @@ const PostItem = ({
 
   return (
     <>
-      <main className="text-gray-700 px-2 snap-y">
+      <main className="text-gray-700 px-2 shadow-md">
         <div className=" border-gray-200 p-2 space-y-8 rounded-lg  -z-10">
           <div className="flex items-center mb-4 justify-between">
             <div className="z-50 flex cursor-pointer relative">
@@ -194,9 +193,7 @@ const PostItem = ({
           </div>
         </div>
       </main>
-      <div className="mb-4">
-        <Seperater />
-      </div>
+      <div className="mb-4"></div>
     </>
   );
 };

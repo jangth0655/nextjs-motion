@@ -44,7 +44,7 @@ const Profile: NextPage = () => {
   }, [userPostData, router]);
 
   return (
-    <Layout goBack={true}>
+    <Layout goBack={true} header="Profile">
       <section className="text-gray-700 p-4">
         {userPostData?.userPost?.avatar ? (
           <div className=" px-6 flex items-center">

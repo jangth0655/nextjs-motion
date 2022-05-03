@@ -23,9 +23,9 @@ export default function Comment({
   reverse,
 }: AnswerData) {
   return (
-    <main className="p-1 mb-6 mt-2 ">
+    <main className="p-1  mt-2">
       {reverse ? (
-        <div className=" text-gray-700 text-sm flex justify-end">
+        <div className=" text-gray-700 text-sm flex justify-end shadow-sm">
           <div className="flex items-center flex-row-reverse">
             <div className="mr-1">
               <AvatarSet avatar={user?.avatar} />
@@ -41,7 +41,7 @@ export default function Comment({
               </div>
 
               <div>
-                <p className="text-right p-2 rounded-md ">{answer}</p>
+                <p className="p-2 rounded-md ">{answer}</p>
               </div>
             </div>
           </div>

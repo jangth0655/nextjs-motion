@@ -23,7 +23,7 @@ export default function Input({
       placeholder={placeholder}
       required={required}
       className={cls(
-        "focus:border-2 focus:border-orange-400  w-full border-gray-100 p-2  border-[1px] rounded-md placeholder:text-gray-300 text-gray-500",
+        "focus:border-2 focus:border-orange-400  w-full border-gray-100 p-2  border-[1px] rounded-md placeholder:text-gray-300 text-gray-500 shadow-md",
         addStyle ? addStyle : ""
       )}
     />
@@ -33,7 +33,7 @@ export default function Input({
       placeholder={placeholder}
       required={required}
       className={cls(
-        "focus:border-2 focus:border-orange-400  w-full border-gray-200 p-2  border-2 rounded-md placeholder:text-gray-300 text-gray-500"
+        "focus:border-2 focus:border-orange-400  w-full border-gray-200 p-2  border-2 rounded-md placeholder:text-gray-300 text-gray-500 shadow-md"
       )}
     />
   );

@@ -15,11 +15,22 @@ const handler = async (
   try {
     const room = await client.room.findFirst({
       where: {
-        users: {
-          some: {
-            id: +id,
+        AND: [
+          {
+            users: {
+              some: {
+                id: user?.id,
+              },
+            },
           },
-        },
+          {
+            users: {
+              some: {
+                id: +id,
+              },
+            },
+          },
+        ],
       },
       select: {
         id: true,

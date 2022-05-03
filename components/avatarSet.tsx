@@ -17,7 +17,7 @@ const AvatarSet = ({ avatar }: Avatar) => {
       />
     </div>
   ) : (
-    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex justify-center items-center border-2 border-orange-200 mr-2">
+    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex justify-center items-center border-2 border-orange-200 mr-2 shadow-sm">
       <svg
         className="h-6 w-6 text-orange-300"
         fill="none"

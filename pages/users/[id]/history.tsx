@@ -34,7 +34,7 @@ const UserHistory: NextPage = () => {
   };
 
   return (
-    <Layout goBack={true}>
+    <Layout goBack={true} header="History">
       <section>
         {userPostData?.userPost?.posts.map((post) => (
           <PostItem key={post.id} {...post} user={user} />

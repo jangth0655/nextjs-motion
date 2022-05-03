@@ -51,7 +51,7 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Layout goBack={false}>
+      <Layout goBack={false} header="Home">
         {postsData &&
           postsData?.posts?.map((post) => {
             return (

@@ -14,7 +14,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { useForm } from "react-hook-form";
-
 import FavWithCommentCount from "@components/favWithCommentCount";
 import PageNation from "@components/pageNation";
 import Comment from "@components/comment";
@@ -167,9 +166,9 @@ const ItemDetail: NextPage = () => {
   }, [answersData, reset]);
 
   return (
-    <Layout goBack={true}>
+    <Layout goBack={true} header="PostDetail">
       <div>{detailData?.error && <Error text="Please log in" />}</div>
-      <section className="text-gray-700 px-4 ">
+      <section className="text-gray-700 px-4 shadow-md">
         <main className="flex flex-col h-[30rem] p-4 space-y-4 rounded-lg ">
           {detailData?.seePost?.user && (
             <div
@@ -205,7 +204,7 @@ const ItemDetail: NextPage = () => {
             <div className="space-y-2">
               {detailData && (
                 <FavWithCommentCount
-                  _count={detailData.seePost._count}
+                  _count={detailData?.seePost?._count}
                   favToggleBtn={favToggleBtn}
                   isLiked={detailData.isLiked}
                 />
@@ -221,10 +220,11 @@ const ItemDetail: NextPage = () => {
           </div>
         </main>
       </section>
-      <Seperater />
+
       <div className="w-full mt-2 pb-2 px-2">
         <div className="mb-1">
           <span className="text-orange-400">Comment</span>
+          <Seperater />
         </div>
         <div className="h-60 mb-4 overflow-y-auto rounded-md">
           {detailData?.seePost?.answers &&
@@ -235,8 +235,8 @@ const ItemDetail: NextPage = () => {
                 )
             )}
         </div>
-        {detailData?.seePost._count.answers &&
-        detailData.seePost._count.answers > ANSWER_SIZE ? (
+        {detailData?.seePost?._count?.answers &&
+        detailData.seePost?._count?.answers > ANSWER_SIZE ? (
           <PageNation pageBack={pageBack} />
         ) : null}
 
@@ -248,25 +248,10 @@ const ItemDetail: NextPage = () => {
             {...register("comment", { required: true })}
             rows={3}
             className="p-1 px-2 rounded-md w-full text-gray-600
-            focus:border-orange-300 border-[1px] placeholder:text-sm"
+            focus:border-orange-300 border-[1px] placeholder:text-sm shadow-md"
             placeholder="Start Comment"
           />
           <Button text="comment" loading={answersLoading} />
-          {/*  <button className="flex absolute right-0 w-[15%] h-full justify-center items-center bg-teal-600 text-teal-100 focus:text-teal-100 focus:bg-teal-400 px-4 rounded-md">
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </button> */}
         </form>
       </div>
     </Layout>

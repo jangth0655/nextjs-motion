@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import useSWR from "swr";
@@ -6,6 +7,7 @@ interface LayoutProps {
   children?: React.ReactNode;
   goBack: boolean;
   title?: string;
+  header?: string;
 }
 
 interface UserData {
@@ -16,7 +18,7 @@ interface UserData {
   };
 }
 
-const Layout = ({ children, goBack = false, title }: LayoutProps) => {
+const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
   const { data: userData } = useSWR<UserData>("/api/users/loginUser");
 
   const router = useRouter();
@@ -43,6 +45,9 @@ const Layout = ({ children, goBack = false, title }: LayoutProps) => {
 
   return (
     <section className="h-screen relative">
+      <Head>
+        <title>{header} | Motion</title>
+      </Head>
       <nav className=" px-4 pt-8 text-sm lg:text-base text-orange-600">
         {goBack ? (
           <>

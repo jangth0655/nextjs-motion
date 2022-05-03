@@ -101,7 +101,7 @@ const UploadPost: NextPage = () => {
   }, [editData, removeData, router]);
 
   return (
-    <Layout goBack={true} title="Create Post">
+    <Layout goBack={true} title="Create Post" header="Edit">
       <form
         onSubmit={handleSubmit(onValid)}
         className="h-screen text-gray-700 space-y-10 mt-16 p-4"
