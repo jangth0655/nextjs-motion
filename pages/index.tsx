@@ -19,18 +19,20 @@ interface ResultsElseWithPost extends Post {
   };
 }
 
+type IsMine = {
+  id: number;
+}[];
+
 interface PostResponse {
   ok: boolean;
   posts: ResultsElseWithPost[];
   postCount: number;
-  isMine: {
-    id: number;
-  }[];
+  isMine: IsMine;
   error?: string;
 }
 
 const initialPage = 1;
-export const pageSize = 5;
+export const pageSize = 10;
 
 const Home: NextPage = () => {
   const [page, setPage] = useState(1);
@@ -91,34 +93,4 @@ const Home: NextPage = () => {
   );
 };
 
-const Page: NextPage<{
-  posts: PostResponse;
-}> = ({ posts }) => {
-  return (
-    <SWRConfig
-      value={{
-        fallback: {
-          "/api/posts/seePosts?page=1": {
-            ok: true,
-            posts: posts.posts,
-          },
-        },
-      }}
-    >
-      <Home />
-    </SWRConfig>
-  );
-};
-
-export const getServerSideProps = async (ctx: NextPageContext) => {
-  const posts = await (
-    await fetch(`http://localhost:3000//api/posts/seePosts?page=1`)
-  ).json();
-  return {
-    props: {
-      posts: JSON.parse(JSON.stringify(posts)),
-    },
-  };
-};
-
-export default Page;
+export default Home;

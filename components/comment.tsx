@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import AvatarSet from "./avatarSet";
 import { dateFormat } from "./postSlider";
 
@@ -21,6 +22,10 @@ export default function Comment({
   user,
   reverse,
 }: AnswerData) {
+  const router = useRouter();
+  const onUserProfile = (id?: number | null) => {
+    router.push(`/users/${id}/profile`);
+  };
   return (
     <main className="p-1  mt-2">
       {reverse ? (
@@ -32,7 +37,10 @@ export default function Comment({
             <div className="space-y-2 mr-1">
               <div className="flex justify-end">
                 <div className="flex flex-row-reverse">
-                  <div className="ml-2 ">
+                  <div
+                    onClick={() => onUserProfile(user?.id)}
+                    className="ml-2 cursor-pointer"
+                  >
                     <span className="font-bold">{user?.username}</span>
                   </div>
                   <div>{createdAt && <span>{dateFormat(createdAt)}</span>}</div>
@@ -54,11 +62,15 @@ export default function Comment({
               </div>
               <div className="space-y-2">
                 <div className="flex">
-                  <div className="mr-2">
+                  <div
+                    onClick={() => onUserProfile(user?.id)}
+                    className="mr-2  cursor-pointer"
+                  >
                     <span className="font-bold">{user?.username}</span>
                   </div>
                   {createdAt && <span>{dateFormat(createdAt)}</span>}
                 </div>
+
                 <div>
                   <p className=" p-1 rounded-md">{answer}</p>
                 </div>

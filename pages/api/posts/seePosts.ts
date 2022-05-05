@@ -12,7 +12,7 @@ const handler = async (
     query: { page = 1 },
   } = req;
 
-  const pageSize = 5;
+  const pageSize = 10;
   try {
     const postCount = await client.post.count({});
     const posts = await client.post.findMany({

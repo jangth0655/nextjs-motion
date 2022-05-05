@@ -168,7 +168,7 @@ const ItemDetail: NextPage = () => {
   return (
     <Layout goBack={true} header="PostDetail">
       <div>{detailData?.error && <Error text="Please log in" />}</div>
-      <section className="text-gray-700 px-4 shadow-md">
+      <section className="text-gray-700 px-4 shadow-md bg-white">
         <main className="flex flex-col h-[30rem] p-4 space-y-4 rounded-lg ">
           {detailData?.seePost?.user && (
             <div
@@ -221,7 +221,7 @@ const ItemDetail: NextPage = () => {
         </main>
       </section>
 
-      <div className="w-full mt-2 pb-2 px-2">
+      <div className="w-full mt-4 pb-2 px-2">
         <div className="mb-1">
           <span className="text-orange-400">Comment</span>
           <Seperater />

@@ -12,6 +12,7 @@ type UserInfo = {
   avatar?: string;
 };
 
+const POST_SIZE = 5;
 const UserHistory: NextPage = () => {
   const router = useRouter();
   const [postPage, setPostPage] = useState(1);
@@ -40,7 +41,10 @@ const UserHistory: NextPage = () => {
           <PostItem key={post.id} {...post} user={user} />
         ))}
       </section>
-      <PageNation pageBack={pageBack} />
+      {userPostData?.userPost._count.posts &&
+      userPostData?.userPost._count.posts > POST_SIZE ? (
+        <PageNation pageBack={pageBack} />
+      ) : null}
     </Layout>
   );
 };

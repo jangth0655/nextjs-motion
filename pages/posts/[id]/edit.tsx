@@ -200,24 +200,26 @@ const UploadPost: NextPage = () => {
             </div>
 
             {removeLoading
-              ? "Loading"
+              ? "Loading :)"
               : postPreview?.postContent?.id && (
-                  <div
-                    onClick={() => onRemovePost(postPreview?.postContent.id)}
-                    className="flex justify-center items-center mt-5 p-[2.5px] rounded-md text-pink-300 cursor-pointer hover:text-pink-500 transition-all"
-                  >
-                    <span className="font-bold">Delete Edit</span>
-                    <svg
-                      className="ml-2 h-8 w-8"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+                  <div className="flex  items-center mt-5 text-pink-200">
+                    <span
+                      onClick={() => onRemovePost(postPreview?.postContent.id)}
+                      className="flex items-center px-2 cursor-pointer hover:bg-pink-600 hover:text-white font-bold transition-all border-2 border-pink-200 rounded-md"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                      Delete Post
+                      <svg
+                        className="ml-1 h-8 w-8 "
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
                   </div>
                 )}
           </div>

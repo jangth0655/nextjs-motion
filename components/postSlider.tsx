@@ -76,7 +76,7 @@ const PostSlider = ({
             />
           </svg>
         </div>
-        <div className="absolute w-[80%] h-full  px-4 rounded-lg pt-1 shadow-md">
+        <div className="absolute w-[80%] h-full  px-4 rounded-lg pt-1 shadow-md bg-white">
           {userPost
             ?.slice(page * OFFSET, page * OFFSET + OFFSET)
             .map((post) => (

@@ -9,53 +9,58 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { id, page },
+    query: { page },
   } = req;
 
   const pageSize = 10;
 
   try {
-    const room = await client.room.findFirst({
+    const roomCount = await client.room.count({
       where: {
-        id: +id,
-      },
-      select: {
-        id: true,
-        _count: {
-          select: {
-            chats: true,
-          },
-        },
-        chats: {
-          select: {
-            payload: true,
-            createdAt: true,
-            id: true,
-            user: {
-              select: {
-                avatar: true,
-                email: true,
-                username: true,
-                id: true,
-              },
-            },
-          },
-          take: pageSize,
-          skip: (+page - 1) * pageSize,
-        },
         users: {
-          select: {
-            username: true,
-            id: true,
-            avatar: true,
+          some: {
+            id: user?.id,
           },
         },
       },
     });
-    if (!room) {
-      return res.status(404).json({ ok: false, error: "Room does not exist" });
+    const rooms = await client.user.findUnique({
+      where: {
+        id: user?.id,
+      },
+
+      select: {
+        avatar: true,
+        username: true,
+        id: true,
+        rooms: {
+          take: pageSize,
+          skip: (+page - 1) * pageSize,
+          select: {
+            id: true,
+            createdAt: true,
+            users: {
+              select: {
+                id: true,
+                avatar: true,
+                username: true,
+              },
+            },
+            chats: {
+              select: {
+                id: true,
+                payload: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!rooms) {
+      return res.json({ ok: false, error: "Room does not exist" });
     }
-    return res.status(200).json({ ok: true, room });
+    return res.status(200).json({ ok: true, rooms, roomCount });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error });

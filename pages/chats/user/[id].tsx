@@ -126,9 +126,9 @@ const Chat: NextPage = () => {
 
   return (
     <Layout goBack={true} header="Chat">
-      <main className="p-2 space-y-4">
+      <main className="p-2 space-y-4 ">
         <h2 className="text-2xl font-bold text-gray-900">Live Chat</h2>
-        <div className="h-[60vh] px-1 overflow-y-auto shadow-sm">
+        <div className="h-[70vh] px-1 overflow-y-auto shadow-md bg-white">
           {roomData?.room?.chats &&
             roomData.room?.chats?.map((chat) => (
               <Comment

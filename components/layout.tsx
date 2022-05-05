@@ -45,20 +45,29 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
     router.reload();
   };
 
+  const onChatList = () => {
+    router.push(`/chats/user`);
+  };
+
   return (
-    <section className="h-screen relative">
+    <section className="min-h-screen relative bg-orange-50">
       <Head>
         <title>{header} | Motion</title>
       </Head>
       <nav className=" px-4 pt-8 text-sm lg:text-base text-orange-600">
         {goBack ? (
           <>
-            <div className="flex justify-around ">
+            <div className="flex justify-evenly ">
               <div
                 onClick={onHome}
-                className="w-44 h-10 cursor-pointer flex items-center relative"
+                className="w-44 h-10 cursor-pointer flex items-center relative "
               >
-                <Image src={motionWord} layout="fill" objectFit="cover" />
+                <Image
+                  src={motionWord}
+                  layout="fill"
+                  objectFit="cover"
+                  priority
+                />
               </div>
               <div className="flex items-center text-2xl">
                 <span>{title}</span>
@@ -86,19 +95,28 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
               </div>
             </div>
           </>
-        ) : userData ? (
+        ) : userData?.ok ? (
           <div className="flex items-center justify-between">
             <div
               onClick={onHome}
               className="w-44 h-10 cursor-pointer flex items-center relative"
             >
-              <Image src={motionWord} layout="fill" objectFit="cover" />
+              <Image
+                src={motionWord}
+                layout="fill"
+                objectFit="cover"
+                priority
+              />
             </div>
+
             <div className="flex items-center text-2xl">
               <span>{title}</span>
             </div>
-            <div className="flex lg:space-x-24 space-x-3">
-              <div className="flex flex-col items-center cursor-pointer ">
+            <div className="flex lg:space-x-24 space-x-4">
+              <div
+                onClick={onChatList}
+                className="flex flex-col items-center cursor-pointer "
+              >
                 <svg
                   className="h-5 w-5 text-orange-300 hover:scale-125 hover:transition-all"
                   fill="none"
@@ -114,9 +132,10 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
                 </svg>
                 <span className="">Chat</span>
               </div>
+
               <div
                 onClick={onLogout}
-                className="flex flex-col items-center cursor-pointer "
+                className="flex flex-col items-center justify-center cursor-pointer "
               >
                 <svg
                   className="h-5 w-5 text-orange-300 hover:scale-125 hover:transition-all"
@@ -131,9 +150,10 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                <span className="text-sm uppercase">Log out</span>
+                <span className="text-sm">Log out</span>
               </div>
-              <div onClick={onProfile} className="px-3 ">
+
+              <div onClick={onProfile} className="px-2 ">
                 <div className="flex flex-col items-center cursor-pointer">
                   <svg
                     className="h-5 w-5 text-orange-300 hover:scale-125 hover:transition-all"
@@ -156,9 +176,6 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
             </div>
           </div>
         ) : (
-          <div></div>
-        )}
-        {!userData?.ok && (
           <div className="flex items-center justify-around">
             <div className="cursor-pointer flex items-center">
               <svg
@@ -199,9 +216,10 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
             </div>
           </div>
         )}
+
         <div className="mt-5 h-[0.5px] w-full bg-orange-200" />
       </nav>
-      <main className=" h-screen max-w-2xl m-auto mt-6">{children}</main>
+      <main className="max-w-2xl m-auto py-4">{children}</main>
     </section>
   );
 };

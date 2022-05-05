@@ -44,6 +44,14 @@ interface RoomMutation {
   };
 }
 
+interface LoggedInUser {
+  ok: boolean;
+  me: {
+    id: number;
+    username: string;
+  };
+}
+
 const PostItem = ({
   _count,
   userId,
@@ -58,13 +66,16 @@ const PostItem = ({
   const router = useRouter();
   const onSlideConfig = (postId: number) => {
     if (id === postId) {
-      setSlideConfig((prev) => !prev);
+      slideConfig === false ? setSlideConfig(true) : setSlideConfig(false);
     }
   };
 
   const { data: currentRoom } = useSWR<RoomConfirm>(
     userId ? `/api/chats/userRoom/${userId}` : null
   );
+
+  const { data: loggedIn, error } =
+    useSWR<LoggedInUser>(`/api/users/loginUser`);
 
   const [makeRoom, { data: makeRoomData, loading: makeRoomLoading }] =
     useMutation<RoomMutation>(`/api/chats?userId=${userId}`);
@@ -73,7 +84,11 @@ const PostItem = ({
   };
 
   const onItemDetail = (id: number) => {
-    router.push(`/posts/${id}`);
+    if (!loggedIn?.ok) {
+      router.push("/login");
+    } else {
+      router.push(`/posts/${id}`);
+    }
   };
 
   const onEditPost = (id: number) => {
@@ -90,23 +105,30 @@ const PostItem = ({
     }
   };
 
+  const toggleSlideConfig = (postId: number) => {
+    slideConfig === true && setSlideConfig(false);
+  };
+
   return (
     <>
-      <main className="text-gray-700 px-2 shadow-md">
-        <div className=" border-gray-200 p-2 space-y-8 rounded-lg  -z-10">
-          <div className="flex items-center mb-4 justify-between">
-            <div className="z-50 flex cursor-pointer relative">
-              <div className="z-10" onClick={() => onSlideConfig(id)}>
+      <main className="text-gray-700 p-4 shadow-md -z-10 bg-white rounded-lg">
+        <div onClick={() => toggleSlideConfig(id)} className="space-y-8 ">
+          <div className="flex items-center justify-between ">
+            <div
+              onClick={() => onSlideConfig(id)}
+              className="flex cursor-pointer items-center relative"
+            >
+              <div className="z-50 ">
                 <AvatarSet avatar={user?.avatar} />
               </div>
 
-              <div onClick={() => onSlideConfig(id)}>
-                <span className="text-xs">{user?.username}</span>
+              <div>
+                <span className="text-xs p-1">{user?.username}</span>
               </div>
 
               <div
                 className={cls(
-                  "text-xs w-full bg-orange-300 absolute -bottom-14 z-10 rounded-md text-orange-100 origin-top transition-all",
+                  "text-xs w-full bg-orange-300 absolute -bottom-14 z-10 rounded-md text-orange-100 origin-top transition-all ",
                   slideConfig ? "scale-y-100" : "scale-y-0 "
                 )}
               >
@@ -129,10 +151,10 @@ const PostItem = ({
             <div className="flex">
               <div
                 onClick={() => onItemDetail(id)}
-                className="px-2 cursor-pointer group"
+                className="px-2 cursor-pointer group hover:scale-125 transition-all"
               >
                 <svg
-                  className="h-4 w-4 text-gray-500 group-hover:text-orange-400   transition-all"
+                  className="h-4 w-4 text-gray-500 group-hover:text-orange-400   transition-all "
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -143,17 +165,21 @@ const PostItem = ({
                   />
                 </svg>
               </div>
-              {isMine?.map((loggedUser) =>
-                loggedUser.id === id ? (
-                  <div
-                    key={loggedUser.id}
-                    onClick={() => onEditPost(id)}
-                    className="ml-2 text-xs bg-orange-300 px-[2px] rounded-md text-white cursor-pointer hover:bg-orange-500 transition-all flex justify-center items-center"
-                  >
-                    <span>Edit Post</span>
-                  </div>
-                ) : null
-              )}
+
+              {isMine &&
+                isMine?.map((loggedUser) =>
+                  loggedUser.id === id ? (
+                    <div
+                      key={loggedUser.id}
+                      onClick={() => onEditPost(id)}
+                      className="ml-2 text-xs bg-orange-300 px-[2px] rounded-md text-white cursor-pointer hover:bg-orange-500 transition-all flex justify-center items-center"
+                    >
+                      <span className="flex items-center p-[2.5px]">
+                        Edit Post
+                      </span>
+                    </div>
+                  ) : null
+                )}
             </div>
           </div>
 
@@ -164,6 +190,7 @@ const PostItem = ({
                 className="bg-cover bg-center"
                 objectFit="cover"
                 layout="fill"
+                quality={100}
                 priority
               />
             </div>
