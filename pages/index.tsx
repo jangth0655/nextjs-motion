@@ -2,10 +2,11 @@ import Layout from "@components/layout";
 import PageNation from "@components/pageNation";
 import PostItem from "@components/postItem";
 import { Post } from "@prisma/client";
-import type { NextPage } from "next";
+import type { NextPage, NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { SWRConfig } from "swr";
+import client from "@libs/server/client";
 
 interface ResultsElseWithPost extends Post {
   user: {
@@ -22,7 +23,9 @@ interface PostResponse {
   ok: boolean;
   posts: ResultsElseWithPost[];
   postCount: number;
-  isMine: boolean;
+  isMine: {
+    id: number;
+  }[];
   error?: string;
 }
 
@@ -46,7 +49,11 @@ const Home: NextPage = () => {
       ? setPage((prev) =>
           prev - initialPage === 0 ? initialPage : prev - initialPage
         )
-      : setPage((prev) => prev + initialPage);
+      : setPage((prev) =>
+          postsData?.posts.length && prev > postsData?.posts.length / pageSize
+            ? 1
+            : prev + initialPage
+        );
   };
 
   return (
@@ -58,7 +65,7 @@ const Home: NextPage = () => {
               <PostItem key={post.id} {...post} isMine={postsData.isMine} />
             );
           })}
-        {postsData?.posts && postsData?.posts?.length > pageSize ? (
+        {postsData?.posts && postsData?.postCount > pageSize ? (
           <PageNation pageBack={pageBack} />
         ) : null}
       </Layout>
@@ -84,4 +91,34 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+const Page: NextPage<{
+  posts: PostResponse;
+}> = ({ posts }) => {
+  return (
+    <SWRConfig
+      value={{
+        fallback: {
+          "/api/posts/seePosts?page=1": {
+            ok: true,
+            posts: posts.posts,
+          },
+        },
+      }}
+    >
+      <Home />
+    </SWRConfig>
+  );
+};
+
+export const getServerSideProps = async (ctx: NextPageContext) => {
+  const posts = await (
+    await fetch(`http://localhost:3000//api/posts/seePosts?page=1`)
+  ).json();
+  return {
+    props: {
+      posts: JSON.parse(JSON.stringify(posts)),
+    },
+  };
+};
+
+export default Page;

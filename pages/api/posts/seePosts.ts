@@ -17,7 +17,7 @@ const handler = async (
     const postCount = await client.post.count({});
     const posts = await client.post.findMany({
       take: pageSize,
-      skip: (+page - 1) * pageSize,
+      ...(page && { skip: (+page - 1) * pageSize }),
       include: {
         user: {
           select: {
@@ -52,16 +52,14 @@ const handler = async (
       return res.status(404).json({ ok: false, error: "Not found" });
     }
     if (user) {
-      const isMine = Boolean(
-        await client.post.findFirst({
-          where: {
-            userId: user?.id,
-          },
-          select: {
-            id: true,
-          },
-        })
-      );
+      const isMine = await client.post.findMany({
+        where: {
+          userId: user?.id,
+        },
+        select: {
+          id: true,
+        },
+      });
       return res.status(200).json({ ok: true, posts, postCount, isMine });
     }
     return res.status(200).json({ ok: true, posts, postCount, isMine: false });

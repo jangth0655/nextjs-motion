@@ -2,15 +2,13 @@ import { deliveryFile } from "@libs/client/deliveryFIle";
 import { Post } from "@prisma/client";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Seperater from "./seperater";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cls } from "@libs/client/cls";
 import { dateFormat } from "./postSlider";
 import AvatarSet from "./avatarSet";
 import FavWithCommentCount from "./favWithCommentCount";
 import useMutation from "@libs/client/mutation";
 import useSWR from "swr";
-import Link from "next/link";
 
 interface PostList extends Post {
   _count?: {
@@ -21,7 +19,9 @@ interface PostList extends Post {
     username?: string;
     avatar?: string;
   };
-  isMine?: boolean;
+  isMine?: {
+    id: number;
+  }[];
 }
 
 export interface FavToggle {
@@ -56,7 +56,6 @@ const PostItem = ({
 }: PostList) => {
   const [slideConfig, setSlideConfig] = useState(false);
   const router = useRouter();
-  const [currentRoomLoading, setCurrentRoomLoading] = useState(false);
   const onSlideConfig = (postId: number) => {
     if (id === postId) {
       setSlideConfig((prev) => !prev);
@@ -80,14 +79,6 @@ const PostItem = ({
   const onEditPost = (id: number) => {
     router.push(`/posts/${id}/edit`);
   };
-
-  useEffect(() => {
-    if (!currentRoom) {
-      setCurrentRoomLoading(true);
-    } else {
-      setCurrentRoomLoading(false);
-    }
-  }, [currentRoom]);
 
   const onChat = (id: number) => {
     if (!currentRoom?.ok && !makeRoomData) {
@@ -152,16 +143,17 @@ const PostItem = ({
                   />
                 </svg>
               </div>
-              {isMine ? (
-                <>
+              {isMine?.map((loggedUser) =>
+                loggedUser.id === id ? (
                   <div
+                    key={loggedUser.id}
                     onClick={() => onEditPost(id)}
                     className="ml-2 text-xs bg-orange-300 px-[2px] rounded-md text-white cursor-pointer hover:bg-orange-500 transition-all flex justify-center items-center"
                   >
                     <span>Edit Post</span>
                   </div>
-                </>
-              ) : null}
+                ) : null
+              )}
             </div>
           </div>
 

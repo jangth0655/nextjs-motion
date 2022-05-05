@@ -5,12 +5,14 @@ import Layout from "@components/layout";
 import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
 import { Post, User } from "@prisma/client";
-import { NextPage } from "next";
+import { NextPage, NextPageContext } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
+import useSWR, { SWRConfig } from "swr";
+import client from "@libs/server/client";
+import { withSsrSession } from "@libs/server/withSession";
 
 interface ElseWithUser extends User {
   _count: {
@@ -123,7 +125,7 @@ const Profile: NextPage = () => {
     console.log(deleteImageLoading);
   };
   return (
-    <Layout goBack={true}>
+    <Layout goBack={true} header="Edit Profile">
       <section className="text-gray-700 p-4">
         {avatarPreview ? (
           <div className=" px-6 flex items-center">
@@ -324,27 +326,6 @@ const Profile: NextPage = () => {
             <div className="flex mt-6">
               <Button text="Edit" loading={editLoading} />
             </div>
-            {/*   <div className="flex justify-center items-center m-auto py-2">
-              <button className="py-1 px-5 hover:text-orange-600  hover:transition-all text-orange-400">
-                {editLoading ? (
-                  <span className="text-sm uppercase">Loading</span>
-                ) : (
-                  <svg
-                    className="h-6 w-6 "
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div> */}
           </form>
           {editError && (
             <div className="mt-3">{<Error text={editError} />}</div>
@@ -355,4 +336,48 @@ const Profile: NextPage = () => {
   );
 };
 
-export default Profile;
+const SProfile: NextPage<{ me: ElseWithUser }> = (me) => {
+  return (
+    <SWRConfig
+      value={{
+        fallback: {
+          "/api/users/me": {
+            ok: true,
+            me,
+          },
+        },
+      }}
+    >
+      <Profile />
+    </SWRConfig>
+  );
+};
+
+export const getServerSideProps = withSsrSession(
+  async (ctx: NextPageContext) => {
+    const me = await client.user.findUnique({
+      where: {
+        id: ctx.req?.session?.user?.id,
+      },
+      select: {
+        avatar: true,
+        username: true,
+        id: true,
+        email: true,
+        _count: {
+          select: {
+            favs: true,
+            posts: true,
+          },
+        },
+      },
+    });
+    return {
+      props: {
+        me: JSON.parse(JSON.stringify(me)),
+      },
+    };
+  }
+);
+
+export default SProfile;

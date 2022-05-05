@@ -1,4 +1,4 @@
-import { withIronSessionApiRoute } from "iron-session/next";
+import { withIronSessionApiRoute, withIronSessionSsr } from "iron-session/next";
 import { NextApiHandler } from "next";
 
 declare module "iron-session" {
@@ -17,3 +17,7 @@ const sessionConfig = {
 export const withSession = (handler: NextApiHandler) => {
   return withIronSessionApiRoute(handler, sessionConfig);
 };
+
+export function withSsrSession(handler: any) {
+  return withIronSessionSsr(handler, sessionConfig);
+}

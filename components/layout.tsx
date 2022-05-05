@@ -1,7 +1,9 @@
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 import useSWR from "swr";
+import motionWord from "public/motionWord.png";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -54,22 +56,9 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
             <div className="flex justify-around ">
               <div
                 onClick={onHome}
-                className="cursor-pointer flex items-center "
+                className="w-44 h-10 cursor-pointer flex items-center relative"
               >
-                <svg
-                  className="h-6 w-6 text-orange-300 mr-2  hover:scale-125 hover:transition-all"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                  />
-                </svg>
-                <span className="uppercase">motion</span>
+                <Image src={motionWord} layout="fill" objectFit="cover" />
               </div>
               <div className="flex items-center text-2xl">
                 <span>{title}</span>
@@ -97,23 +86,13 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
               </div>
             </div>
           </>
-        ) : userData?.ok ? (
+        ) : userData ? (
           <div className="flex items-center justify-between">
-            <div onClick={onHome} className="cursor-pointer flex items-center ">
-              <svg
-                className="h-6 w-6 text-orange-300 mr-2 hover:scale-125 hover:transition-all"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                />
-              </svg>
-              <span className="uppercase">motion</span>
+            <div
+              onClick={onHome}
+              className="w-44 h-10 cursor-pointer flex items-center relative"
+            >
+              <Image src={motionWord} layout="fill" objectFit="cover" />
             </div>
             <div className="flex items-center text-2xl">
               <span>{title}</span>
@@ -177,6 +156,9 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
             </div>
           </div>
         ) : (
+          <div></div>
+        )}
+        {!userData?.ok && (
           <div className="flex items-center justify-around">
             <div className="cursor-pointer flex items-center">
               <svg

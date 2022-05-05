@@ -1,4 +1,3 @@
-import { cls } from "@libs/client/cls";
 import AvatarSet from "./avatarSet";
 import { dateFormat } from "./postSlider";
 
@@ -47,24 +46,26 @@ export default function Comment({
           </div>
         </div>
       ) : (
-        <div className="text-gray-700 text-sm ">
-          <div className="flex items-center ">
-            <div className="mr-1 ">
-              <AvatarSet avatar={user?.avatar} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex">
-                <div className="mr-2">
-                  <span className="font-bold">{user?.username}</span>
-                </div>
-                {createdAt && <span>{dateFormat(createdAt)}</span>}
+        <>
+          <div className="text-gray-700 text-sm shadow-sm">
+            <div className="flex items-center ">
+              <div className="mr-1 ">
+                <AvatarSet avatar={user?.avatar} />
               </div>
-              <div>
-                <p className=" p-1 rounded-md">{answer}</p>
+              <div className="space-y-2">
+                <div className="flex">
+                  <div className="mr-2">
+                    <span className="font-bold">{user?.username}</span>
+                  </div>
+                  {createdAt && <span>{dateFormat(createdAt)}</span>}
+                </div>
+                <div>
+                  <p className=" p-1 rounded-md">{answer}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </main>
   );

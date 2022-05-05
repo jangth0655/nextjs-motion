@@ -235,6 +235,7 @@ const ItemDetail: NextPage = () => {
                 )
             )}
         </div>
+
         {detailData?.seePost?._count?.answers &&
         detailData.seePost?._count?.answers > ANSWER_SIZE ? (
           <PageNation pageBack={pageBack} />
