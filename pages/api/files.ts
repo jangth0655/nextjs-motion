@@ -20,7 +20,7 @@ const handler = async (
         }
       )
     ).json();
-    res.json({ ok: true, ...response.result });
+    res.send({ ok: true, ...response.result });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Upload IMG Error" });

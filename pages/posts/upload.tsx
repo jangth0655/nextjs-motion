@@ -38,6 +38,7 @@ const UploadPost: NextPage = () => {
     if (image && image.length > 0 && user?.data?.username) {
       const { uploadURL } = await (await fetch("/api/files")).json();
       console.log(uploadURL);
+      console.log(image[0]);
       const form = new FormData();
       form.append("file", image[0], user.data?.username);
       const {
@@ -45,7 +46,7 @@ const UploadPost: NextPage = () => {
       } = await (
         await fetch(uploadURL, {
           method: "POST",
-          body: JSON.stringify(form),
+          body: form,
         })
       ).json();
       createPost({ comment, imageId: id });

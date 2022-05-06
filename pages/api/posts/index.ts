@@ -27,12 +27,10 @@ const handler = async (
       },
     });
 
-    return res
-      .status(200)
-      .json({ ok: true, post: JSON.parse(JSON.stringify(post)) });
+    return res.status(200).send({ ok: true, post });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ ok: false, error });
+    return res.status(500).send({ ok: false, error });
   }
 };
 
