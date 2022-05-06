@@ -37,16 +37,12 @@ const UploadPost: NextPage = () => {
     if (createLoading) return;
     if (image && image.length > 0 && user?.data?.username) {
       const { uploadURL } = await (await fetch("/api/files")).json();
-      console.log(uploadURL);
-
       if (!uploadURL) {
         console.log(`uploadURL Error ${uploadURL}`);
         return;
       }
-
       const form = new FormData();
       form.append("file", image[0], user.data?.username);
-
       const {
         result: { id },
       } = await (
@@ -55,7 +51,6 @@ const UploadPost: NextPage = () => {
           body: form,
         })
       ).json();
-
       if (!id) {
         console.log(`not found ${id}`);
         return;
