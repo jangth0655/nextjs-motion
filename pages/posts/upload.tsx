@@ -45,7 +45,7 @@ const UploadPost: NextPage = () => {
       } = await (
         await fetch(uploadURL, {
           method: "POST",
-          body: form,
+          body: JSON.stringify(form),
         })
       ).json();
       createPost({ comment, imageId: id });
