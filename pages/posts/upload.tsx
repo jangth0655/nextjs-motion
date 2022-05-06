@@ -62,7 +62,9 @@ const UploadPost: NextPage = () => {
 
   useEffect(() => {
     if (createData && createData.ok) {
-      router.push("/");
+      console.log(createData);
+
+      //router.push("/");
     }
   }, [createData, router]);
   return (

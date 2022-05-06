@@ -12,8 +12,6 @@ const handler = async (
     session: { user },
   } = req;
 
-  console.log(user?.id);
-
   try {
     const post = await client.post.create({
       data: {
@@ -27,7 +25,9 @@ const handler = async (
       },
     });
 
-    return res.status(200).json({ ok: true, post });
+    return res
+      .status(200)
+      .json({ ok: true, post: JSON.parse(JSON.stringify(post)) });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error });
