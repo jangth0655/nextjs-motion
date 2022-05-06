@@ -2,6 +2,7 @@ import Button from "@components/button";
 import Error from "@components/errors";
 import Layout from "@components/layout";
 import useMutation from "@libs/client/mutation";
+import useUser from "@libs/client/useUser";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -15,11 +16,11 @@ interface UploadForm {
 
 interface UploadResponsive {
   ok: boolean;
-
   error?: string;
 }
 
 const UploadPost: NextPage = () => {
+  const user = useUser();
   const [imagePreview, setImagePreview] = useState("");
   const router = useRouter();
   const [createPost, { data: createData, loading: createLoading, error }] =
@@ -62,9 +63,7 @@ const UploadPost: NextPage = () => {
 
   useEffect(() => {
     if (createData && createData.ok) {
-      console.log(createData);
-
-      //router.push("/");
+      router.push("/");
     }
   }, [createData, router]);
   return (

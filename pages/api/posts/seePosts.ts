@@ -60,9 +60,21 @@ const handler = async (
           id: true,
         },
       });
-      return res.status(200).json({ ok: true, posts, postCount, isMine });
+      return res.status(200).json({
+        ok: true,
+        posts: JSON.parse(JSON.stringify(posts)),
+        postCount,
+        isMine,
+      });
     }
-    return res.status(200).json({ ok: true, posts, postCount, isMine: false });
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        posts: JSON.parse(JSON.stringify(posts)),
+        postCount,
+        isMine: false,
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Server Not OK" });

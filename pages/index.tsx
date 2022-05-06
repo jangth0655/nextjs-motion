@@ -30,6 +30,14 @@ interface PostResponse {
   error?: string;
 }
 
+interface LoggedInUser {
+  ok: boolean;
+  me: {
+    id: number;
+    username: string;
+  };
+}
+
 const initialPage = 1;
 export const pageSize = 10;
 
@@ -39,10 +47,16 @@ const Home: NextPage = () => {
     `/api/posts/seePosts?page=${page}`
   );
 
+  const { data: loginUser } = useSWR<LoggedInUser>(`/api/users/loginUser`);
+
   const router = useRouter();
 
   const onUpload = () => {
-    router.push("/posts/upload");
+    if (!loginUser?.ok || !loginUser) {
+      router.push("/posts/upload");
+    } else {
+      router.push("/posts/upload");
+    }
   };
 
   const pageBack = (isBack: boolean) => {
