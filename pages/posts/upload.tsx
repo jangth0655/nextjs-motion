@@ -35,10 +35,11 @@ const UploadPost: NextPage = () => {
 
   const onValid = async ({ comment, image }: UploadForm) => {
     if (createLoading) return;
-    if (image && image.length > 0) {
+    if (image && image.length > 0 && user?.data?.username) {
       const { uploadURL } = await (await fetch("/api/files")).json();
+      console.log(uploadURL);
       const form = new FormData();
-      form.append("file", image[0]);
+      form.append("file", image[0], user.data?.username);
       const {
         result: { id },
       } = await (
@@ -49,7 +50,9 @@ const UploadPost: NextPage = () => {
       ).json();
       console.log(image);
       console.log(id);
+      console.log(error);
       createPost({ comment, imageId: id });
+      console.log(error);
     } else {
       createPost({ comment });
     }
