@@ -48,11 +48,7 @@ const UploadPost: NextPage = () => {
           body: form,
         })
       ).json();
-      console.log(image);
-      console.log(id);
-      console.log(error);
       createPost({ comment, imageId: id });
-      console.log(error);
     } else {
       createPost({ comment });
     }

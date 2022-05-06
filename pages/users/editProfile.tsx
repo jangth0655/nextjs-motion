@@ -70,7 +70,7 @@ const Profile: NextPage = () => {
       const { uploadURL } = await (await fetch("/api/files")).json();
 
       const form = new FormData();
-      form.append("file", avatar[0], userData?.me.id + "");
+      form.append("file", avatar[0], userData?.me?.username + "");
 
       const {
         result: { id },
