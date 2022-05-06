@@ -38,6 +38,7 @@ const UploadPost: NextPage = () => {
     if (image && image.length > 0 && user?.data?.username) {
       const { uploadURL } = await (await fetch("/api/files")).json();
       console.log(uploadURL);
+
       if (!uploadURL) {
         console.log(`uploadURL Error ${uploadURL}`);
         return;
