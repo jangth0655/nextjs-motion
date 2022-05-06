@@ -2,11 +2,10 @@ import Layout from "@components/layout";
 import PageNation from "@components/pageNation";
 import PostItem from "@components/postItem";
 import { Post } from "@prisma/client";
-import type { NextPage, NextPageContext } from "next";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import useSWR, { SWRConfig } from "swr";
-import client from "@libs/server/client";
+import useSWR from "swr";
 
 interface ResultsElseWithPost extends Post {
   user: {
@@ -73,7 +72,7 @@ const Home: NextPage = () => {
       </Layout>
       <div
         onClick={onUpload}
-        className="fixed bottom-8 right-6 w-8 h-8 sm:w-12 sm:h-12 bg-orange-400 rounded-full flex justify-center items-center cursor-pointer"
+        className="fixed bottom-8 right-6 w-8 h-8 sm:w-12 sm:h-12 bg-orange-300 rounded-full flex justify-center items-center cursor-pointer hover:bg-orange-500 transition-all"
       >
         <svg
           className="h-6 w-6 sm:w-8 sm:h-8 text-white"

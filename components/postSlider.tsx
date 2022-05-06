@@ -76,11 +76,11 @@ const PostSlider = ({
             />
           </svg>
         </div>
-        <div className="absolute w-[80%] h-full  px-4 rounded-lg pt-1 shadow-md bg-white">
+        <div className="absolute w-[80%] h-full  px-4 rounded-lg  shadow-md bg-white">
           {userPost
             ?.slice(page * OFFSET, page * OFFSET + OFFSET)
             .map((post) => (
-              <div className="space-y-5" key={post.id}>
+              <div className="space-y-5 py-2" key={post.id}>
                 <div className="flex justify-between">
                   <div>
                     <div className="flex items-center mb-4">

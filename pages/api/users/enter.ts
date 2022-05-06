@@ -59,6 +59,16 @@ const handler = async (
       },
     });
 
+    if (email) {
+      const email = await mail.send({
+        from: "jangth0655@naver.com",
+        to: "jangth0655@gmail.com",
+        subject: "Your motion Verification Eamil",
+        text: `Your token is ${payload}`,
+        html: `<strong>Your token is ${payload}</strong>`,
+      });
+    }
+
     return res.status(201).json({ ok: true, token });
   } catch (error) {
     console.log(error);

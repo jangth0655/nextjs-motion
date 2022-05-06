@@ -69,10 +69,10 @@ const UploadPost: NextPage = () => {
     <Layout goBack={true} title="Create Post">
       <form
         onSubmit={handleSubmit(onValid)}
-        className="h-screen text-gray-700 space-y-10 mt-16 p-4"
+        className="h-screen text-gray-700 space-y-10 mt-4 p-4"
       >
         {imagePreview ? (
-          <label className="h-[30%] flex justify-center items-center ">
+          <label className="h-[50%] flex justify-center items-center bg-white p-6 rounded-lg">
             <div className="relative w-full h-full overflow-hidden rounded-md">
               <Image
                 src={imagePreview}

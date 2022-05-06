@@ -50,7 +50,7 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
   };
 
   return (
-    <section className="min-h-screen relative bg-orange-50">
+    <section className="min-h-screen relative bg-orange-50 overflow-y-auto">
       <Head>
         <title>{header} | Motion</title>
       </Head>
