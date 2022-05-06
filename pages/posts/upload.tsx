@@ -48,6 +48,8 @@ const UploadPost: NextPage = () => {
           headers: { "Content-Type": "application/json" },
         })
       ).json();
+      console.log(image);
+      console.log(id);
       createPost({ comment, imageId: id });
     } else {
       createPost({ comment });
