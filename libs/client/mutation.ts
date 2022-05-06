@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 
 interface MutationState<T> {
@@ -21,10 +20,10 @@ const useMutation = <T>(url: string): MutationResponse<T> => {
       const response = await (
         await fetch(url, {
           method: "POST",
-          body: JSON.stringify(data),
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(data),
         })
       ).json();
       setValue((prev) => ({ ...prev, data: response }));

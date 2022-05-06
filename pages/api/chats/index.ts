@@ -13,6 +13,9 @@ const handler = async (
     body: { payload },
   } = req;
 
+  console.log(req.query);
+  console.log(req.body);
+
   try {
     if (req.method === "GET") {
       const pageSize = 5;
@@ -70,22 +73,24 @@ const handler = async (
             .status(404)
             .json({ ok: false, error: "Chatting room does not exist" });
         }
-        const chat = await client.chat.create({
-          data: {
-            payload,
-            user: {
-              connect: {
-                id: user?.id,
+        if (payload) {
+          const chat = await client.chat.create({
+            data: {
+              payload: payload ? payload : "",
+              user: {
+                connect: {
+                  id: user?.id,
+                },
+              },
+              room: {
+                connect: {
+                  id: +roomId,
+                },
               },
             },
-            room: {
-              connect: {
-                id: +roomId,
-              },
-            },
-          },
-        });
-        return res.status(201).json({ ok: true, chat });
+          });
+          return res.status(201).json({ ok: true, chat });
+        }
       }
     }
   } catch (error) {
