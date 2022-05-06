@@ -18,7 +18,7 @@ const handler = async (
     const post = await client.post.create({
       data: {
         comment,
-        image: imageId ? imageId : null,
+        image: imageId,
         user: {
           connect: {
             id: user?.id,
@@ -26,6 +26,7 @@ const handler = async (
         },
       },
     });
+
     if (!post) {
       return res.send({ ok: false, error: "post not found" });
     }

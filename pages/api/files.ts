@@ -1,4 +1,3 @@
-import client from "@libs/server/client";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import { withSession } from "@libs/server/withSession";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -20,10 +19,12 @@ const handler = async (
         }
       )
     ).json();
-    if (!response.ok) {
+    console.log(response);
+
+    if (!response) {
       return res.send({ ok: false, error: "cloudflare error" });
     }
-    return res.send({ ok: true, ...response.result });
+    return res.json({ ok: true, ...response.result });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Upload IMG Error" });
