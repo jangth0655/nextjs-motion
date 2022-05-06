@@ -18,10 +18,18 @@ const useMutation = <T>(url: string): MutationResponse<T> => {
   const mutation = async (data: any) => {
     try {
       setValue((prev) => ({ ...prev, loading: true }));
-      const response = await axios.post(url, data);
-      setValue((prev) => ({ ...prev, data: response.data }));
-      if (!response.data.ok) {
-        setValue((prev) => ({ ...prev, error: response.data.error }));
+      const response = await (
+        await fetch(url, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+      ).json();
+      setValue((prev) => ({ ...prev, data: response }));
+      if (!response.ok) {
+        setValue((prev) => ({ ...prev, error: response.error }));
       }
     } catch (error) {
       console.log(error);

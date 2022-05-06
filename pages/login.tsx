@@ -9,6 +9,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import useSWR from "swr";
 
 interface LoginMutationRes {
   ok: boolean;
@@ -21,9 +22,18 @@ interface LoginForm {
   username: string;
 }
 
+interface LoggedInUser {
+  ok: boolean;
+  me: {
+    id: number;
+    username: string;
+  };
+}
+
 const login: NextPage = () => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<LoginForm>();
+  const { data: loginUser } = useSWR<LoggedInUser>(`/api/users/loginUser`);
   const [
     loginMutation,
     { data: loginData, loading: loginLoading, error: loginError },
@@ -39,6 +49,12 @@ const login: NextPage = () => {
       router.push("/");
     }
   }, [loginData, router]);
+
+  useEffect(() => {
+    if (loginUser && loginUser.ok) {
+      router.push("/");
+    }
+  }, [loginUser, router]);
 
   const onClick = () => {
     router.replace("/enter");
