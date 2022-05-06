@@ -26,7 +26,9 @@ const handler = async (
         },
       },
     });
-
+    if (!post) {
+      return res.send({ ok: false, error: "post not found" });
+    }
     return res.status(200).send({ ok: true, post });
   } catch (error) {
     console.log(error);

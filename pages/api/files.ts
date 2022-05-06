@@ -20,7 +20,10 @@ const handler = async (
         }
       )
     ).json();
-    res.send({ ok: true, ...response.result });
+    if (!response.ok) {
+      return res.send({ ok: false, error: "cloudflare error" });
+    }
+    return res.send({ ok: true, ...response.result });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ ok: false, error: "Upload IMG Error" });

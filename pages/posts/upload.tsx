@@ -49,7 +49,11 @@ const UploadPost: NextPage = () => {
           body: form,
         })
       ).json();
-      createPost({ comment, imageId: id });
+      if (id) {
+        createPost({ comment, imageId: id });
+      } else {
+        console.log(`not found ${id}`);
+      }
     } else {
       createPost({ comment });
     }
@@ -65,9 +69,7 @@ const UploadPost: NextPage = () => {
 
   useEffect(() => {
     if (createData && createData.ok) {
-      console.log(createData);
       router.push("/");
-      console.log(createData);
     }
   }, [createData, router]);
   return (

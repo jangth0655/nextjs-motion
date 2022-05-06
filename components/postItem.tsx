@@ -70,8 +70,6 @@ const PostItem = ({
     }
   };
 
-  console.log(image);
-
   const { data: currentRoom } = useSWR<RoomConfirm>(
     userId ? `/api/chats/userRoom/${userId}` : null
   );
