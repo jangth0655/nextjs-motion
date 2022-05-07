@@ -63,7 +63,10 @@ const Chat: NextPage = () => {
   const { data: roomData, mutate } = useSWR<RoomData>(
     currentRoom?.room?.id
       ? `/api/chats/seeRoom/${currentRoom?.room?.id}?page=${chatPage}`
-      : null
+      : null,
+    {
+      refreshInterval: 1000,
+    }
   );
 
   const [sendMessage, { data: chatData, loading: chatLoading }] =

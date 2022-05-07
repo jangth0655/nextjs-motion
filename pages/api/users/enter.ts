@@ -1,9 +1,9 @@
 import client from "@libs/server/client";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
-import mail from "@sendgrid/mail";
 import { NextApiRequest, NextApiResponse } from "next";
+//import mail from "@sendgrid/mail";
 
-mail.setApiKey(process.env.SENDGRID_API_KEY!);
+//mail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 const handler = async (
   req: NextApiRequest,
@@ -59,7 +59,7 @@ const handler = async (
       },
     });
 
-    if (email) {
+    /* if (email) {
       const email = await mail.send({
         from: "jangth0655@naver.com",
         to: "jangth0655@gmail.com",
@@ -67,7 +67,7 @@ const handler = async (
         text: `Your token is ${payload}`,
         html: `<strong>Your token is ${payload}</strong>`,
       });
-    }
+    } */
 
     return res.status(201).json({ ok: true, token });
   } catch (error) {

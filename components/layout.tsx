@@ -1,9 +1,10 @@
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import useSWR from "swr";
 import motionWord from "public/motionWord.png";
+import { cls } from "@libs/client/cls";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -21,6 +22,7 @@ interface UserData {
 }
 
 const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
+  const [editVisible, setEditVisible] = useState(true);
   const { data: userData } = useSWR<UserData>("/api/users/loginUser");
 
   const router = useRouter();
@@ -109,10 +111,11 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
               />
             </div>
 
-            <div className="flex items-center text-2xl">
+            <div className="flex items-center text-xl font-bold">
               <span>{title}</span>
             </div>
-            <div className="flex lg:space-x-24 space-x-4">
+
+            <div className="flex items-center lg:space-x-24 space-x-4">
               <div
                 onClick={onChatList}
                 className="flex flex-col items-center cursor-pointer "
@@ -154,9 +157,9 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
               </div>
 
               <div onClick={onProfile} className="px-2 ">
-                <div className="flex flex-col items-center cursor-pointer">
+                <div className="flex flex-col items-center cursor-pointer relative p-1 hover:bg-orange-500 hover:text-orange-100 transition-all rounded-md">
                   <svg
-                    className="h-5 w-5 text-orange-300 hover:scale-125 hover:transition-all"
+                    className="h-5 w-5 text-orange-300 hover:scale-125 hover:transition-all "
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -168,9 +171,13 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
                       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
-                  {userData.me?.username ? (
-                    <span>{userData.me.username}</span>
-                  ) : null}
+                  <div>
+                    {userData.me?.username ? (
+                      <div>
+                        <span>{userData.me.username}</span>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </div>

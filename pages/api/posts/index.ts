@@ -12,8 +12,6 @@ const handler = async (
     session: { user },
   } = req;
 
-  console.log(req.body);
-
   try {
     const post = await client.post.create({
       data: {
