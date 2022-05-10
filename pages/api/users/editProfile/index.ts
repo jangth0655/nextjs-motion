@@ -1,3 +1,4 @@
+import { deleteImageFile } from "@libs/client/deleteImageFile";
 import client from "@libs/server/client";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import { withSession } from "@libs/server/withSession";
@@ -94,7 +95,7 @@ const handler = async (
       return res.status(200).json({ ok: true });
     }
 
-    if (avatarId) {
+    if (avatarId && avatarId !== currentUser.avatar) {
       await client.user.update({
         where: {
           id: user?.id,

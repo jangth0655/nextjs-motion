@@ -158,14 +158,14 @@ const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
                 <span className="md:text-base text-xs">Log out</span>
               </div>
 
-              <div onClick={onProfile} className="px-2 ">
-                <div className="flex flex-col items-center cursor-pointer relative p-1 hover:bg-orange-500 hover:text-orange-100 transition-all rounded-md">
+              <div onClick={onProfile} className="px-2">
+                <div className="flex flex-col items-center cursor-pointer relative p-1 hover:bg-orange-500 hover:text-orange-100 transition-all ">
                   {userData.me.avatar ? (
-                    <div className="relative h-5 w-5">
+                    <div className="relative h-7 w-7 rounded-full overflow-hidden">
                       <Image
                         src={deliveryFile(userData.me.avatar)}
                         layout="fill"
-                        objectFit="contain"
+                        objectFit="cover"
                         alt="avatar"
                       />
                     </div>

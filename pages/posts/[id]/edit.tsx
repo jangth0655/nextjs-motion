@@ -1,6 +1,8 @@
 import Button from "@components/button";
 import Error from "@components/errors";
 import Layout from "@components/layout";
+import { cls } from "@libs/client/cls";
+import { deleteImageFile } from "@libs/client/deleteImageFile";
 import { deliveryFile } from "@libs/client/deliveryFIle";
 import useMutation from "@libs/client/mutation";
 import { NextPage } from "next";
@@ -57,6 +59,8 @@ const UploadPost: NextPage = () => {
   const onValid = async ({ comment, image }: EditForm) => {
     if (editLoading) return;
     if (image && image.length > 0) {
+      postPreview?.postContent.image &&
+        deleteImageFile(postPreview?.postContent.image);
       const { uploadURL } = await (await fetch("/api/files")).json();
       const form = new FormData();
       form.append("file", image[0]);
@@ -74,13 +78,14 @@ const UploadPost: NextPage = () => {
     }
   };
 
+  const onRemoveImage = () => {
+    postPreview?.postContent.image &&
+      deleteImageFile(postPreview?.postContent.image);
+  };
+
   const onRemovePost = async (id: number) => {
-    await (
-      await fetch(`/api/deleteImage`, {
-        method: "DELETE",
-        body: `${postPreview?.postContent.image}`,
-      })
-    ).json();
+    postPreview?.postContent.image &&
+      deleteImageFile(postPreview?.postContent.image);
     removeItem(id);
   };
 
@@ -110,7 +115,7 @@ const UploadPost: NextPage = () => {
     <Layout goBack={true} title="Create Post" header="Edit">
       <form
         onSubmit={handleSubmit(onValid)}
-        className="h-screen text-gray-700 space-y-10 mt-4 p-4"
+        className="h-screen text-gray-700 mt-4 p-4 "
       >
         {imagePreview ? (
           <label className="h-[50%] flex justify-center items-center bg-white p-6 rounded-lg">
@@ -162,7 +167,19 @@ const UploadPost: NextPage = () => {
             </label>
           </div>
         )}
-        <div className="">
+        <div onClick={onRemoveImage} className="mt-2 flex ">
+          <span
+            className={cls(
+              "text-xs text-pink-200 flex items-center px-2   font-bold transition-all border-2 border-pink-200 rounded-md",
+              postPreview?.postContent.image
+                ? "hover:bg-pink-600 hover:text-white cursor-pointer"
+                : ""
+            )}
+          >
+            Delete Image
+          </span>
+        </div>
+        <div className="mt-10 ">
           <div className="w-full text-sm">
             <div className="items-center">
               <label
@@ -204,7 +221,6 @@ const UploadPost: NextPage = () => {
             <div className=" mt-10">
               <Button text="edit" loading={editLoading} />
             </div>
-
             {removeLoading
               ? "Loading :)"
               : postPreview?.postContent?.id && (

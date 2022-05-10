@@ -14,6 +14,9 @@ import useSWR, { SWRConfig } from "swr";
 import client from "@libs/server/client";
 import { withSsrSession } from "@libs/server/withSession";
 
+import { cls } from "@libs/client/cls";
+import { deleteImageFile } from "@libs/client/deleteImageFile";
+
 interface ElseWithUser extends User {
   _count: {
     favs: number;
@@ -42,7 +45,7 @@ interface EditData {
 
 const Profile: NextPage = () => {
   const router = useRouter();
-  const [deleteImageLoading, setDeleteImageLoading] = useState(false);
+
   const [avatarPreview, setAvatarPreview] = useState("");
   const {
     register,
@@ -67,11 +70,10 @@ const Profile: NextPage = () => {
       });
     }
     if (avatar && avatar.length > 0 && userData?.me.id) {
+      userData?.me.avatar && deleteImageFile(userData?.me.avatar);
       const { uploadURL } = await (await fetch("/api/files")).json();
-
       const form = new FormData();
       form.append("file", avatar[0], userData?.me?.username + "");
-
       const {
         result: { id },
       } = await (
@@ -80,6 +82,7 @@ const Profile: NextPage = () => {
           body: form,
         })
       ).json();
+
       editProfile({ email, username, avatarId: id });
     } else {
       editProfile({ email, username });
@@ -118,9 +121,8 @@ const Profile: NextPage = () => {
   ]);
 
   const removeAvatar = (id: number) => {
-    setDeleteImageLoading(true);
     editProfile({ id });
-    setDeleteImageLoading(false);
+    userData?.me?.avatar && deleteImageFile(userData?.me?.avatar);
   };
   return (
     <Layout goBack={true} header="Edit Profile">
@@ -161,12 +163,17 @@ const Profile: NextPage = () => {
                     accept="image/*"
                   />
                 </label>
-                {userData?.me.id && (
+                {userData?.me.id && userData?.me.avatar && (
                   <div
                     onClick={() => removeAvatar(userData?.me.id)}
-                    className="flex text-center p-1 bg-orange-300 text-white rounded-lg text-xs cursor-pointer hover:bg-orange-500 transition-all"
+                    className={cls(
+                      "flex text-center p-1 bg-orange-300 text-white rounded-lg text-xs transition-all",
+                      userData.me.avatar
+                        ? "hover:bg-orange-500 cursor-pointer"
+                        : ""
+                    )}
                   >
-                    {deleteImageLoading ? "Loading" : <span>Remove</span>}
+                    <span>Remove</span>
                   </div>
                 )}
               </div>
