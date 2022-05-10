@@ -184,14 +184,15 @@ const PostItem = ({
           </div>
 
           {image ? (
-            <div className=" relative w-56 h-56 overflow-hidden rounded-lg">
+            <div className=" relative w-80 h-80 overflow-hidden rounded-lg">
               <Image
                 src={deliveryFile(image)}
-                className="bg-cover bg-center"
+                className=""
                 objectFit="cover"
                 layout="fill"
                 quality={100}
                 priority
+                alt="image"
               />
             </div>
           ) : (

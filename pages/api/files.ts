@@ -19,7 +19,7 @@ const handler = async (
         }
       )
     ).json();
-    console.log(response);
+
     if (!response) {
       return res.send({ ok: false, error: "cloudflare error" });
     }

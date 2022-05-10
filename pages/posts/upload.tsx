@@ -52,7 +52,6 @@ const UploadPost: NextPage = () => {
         })
       ).json();
       if (!id) {
-        console.log(`not found ${id}`);
         return;
       } else {
         return createPost({ comment, imageId: id });

@@ -25,7 +25,7 @@ const FavWithCommentCount = ({
           <svg
             onClick={() => favToggleBtn()}
             className={cls(
-              "h-4 w-4  cursor-pointer text-pink-400",
+              "h-4 w-4   text-pink-400",
               isLiked ? "text-pink-600" : "text-gray-400"
             )}
             fill="none"

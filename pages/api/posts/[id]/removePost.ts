@@ -40,7 +40,6 @@ const handler = async (
           id: +id,
         },
       });
-      console.log(ok);
       return res.status(201).json({ ok: true, error: "Delete post" });
     } else {
       return res.status(400).json({ ok: false, error: "User is invalid" });

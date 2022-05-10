@@ -74,7 +74,13 @@ const UploadPost: NextPage = () => {
     }
   };
 
-  const onRemovePost = (id: number) => {
+  const onRemovePost = async (id: number) => {
+    await (
+      await fetch(`/api/deleteImage`, {
+        method: "DELETE",
+        body: `${postPreview?.postContent.image}`,
+      })
+    ).json();
     removeItem(id);
   };
 

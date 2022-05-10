@@ -5,7 +5,7 @@ export interface ResponseType {
   [key: string]: any;
 }
 
-type Method = "GET" | "POST";
+type Method = "GET" | "POST" | "DELETE";
 type Handler = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 
 type ConfigType = {

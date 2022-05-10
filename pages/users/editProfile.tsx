@@ -119,10 +119,8 @@ const Profile: NextPage = () => {
 
   const removeAvatar = (id: number) => {
     setDeleteImageLoading(true);
-    console.log(deleteImageLoading);
     editProfile({ id });
     setDeleteImageLoading(false);
-    console.log(deleteImageLoading);
   };
   return (
     <Layout goBack={true} header="Edit Profile">
