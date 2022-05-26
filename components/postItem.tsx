@@ -100,6 +100,7 @@ const PostItem = ({
     if (!currentRoom?.ok && !makeRoomData) {
       console.log(userId);
       makeRoom({ userId: id });
+      console.log("userId", userId);
       console.log(userId);
       router.push(`/chats/user/${id}`);
     }
