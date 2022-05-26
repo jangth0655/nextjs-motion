@@ -97,6 +97,7 @@ const PostItem = ({
   };
 
   const onChat = (id: number) => {
+    console.log(id);
     if (!currentRoom?.ok && !makeRoomData) {
       makeRoom("");
       router.push(`/chats/user/${id}`);
