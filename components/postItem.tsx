@@ -77,9 +77,8 @@ const PostItem = ({
   const { data: loggedIn, error } =
     useSWR<LoggedInUser>(`/api/users/loginUser`);
 
-  console.log(userId);
   const [makeRoom, { data: makeRoomData, loading: makeRoomLoading }] =
-    useMutation<RoomMutation>(userId ? `/api/chats?userId=${userId}` : "");
+    useMutation<RoomMutation>(`/api/chats`);
 
   const onSeeProfile = (id: number) => {
     router.push(`/users/${id}/profile`);
@@ -99,7 +98,9 @@ const PostItem = ({
 
   const onChat = (id: number) => {
     if (!currentRoom?.ok && !makeRoomData) {
-      makeRoom();
+      console.log(userId);
+      makeRoom({ userId: id });
+      console.log(userId);
       router.push(`/chats/user/${id}`);
     }
     if (currentRoom && currentRoom?.ok) {

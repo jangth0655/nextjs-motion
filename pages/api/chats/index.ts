@@ -9,11 +9,9 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { userId, roomId, page = 1 },
-    body: { payload },
+    query: { roomId, page = 1 },
+    body: { payload, userId },
   } = req;
-
-  console.log(userId);
 
   try {
     if (req.method === "GET") {
