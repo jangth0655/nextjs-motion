@@ -13,6 +13,8 @@ const handler = async (
     body: { payload },
   } = req;
 
+  console.log(userId);
+
   try {
     if (req.method === "GET") {
       const pageSize = 5;
