@@ -83,7 +83,9 @@ const Chat: NextPage = () => {
     );
 
   const { data: chatList } = useSWR<LastChat>(
-    currentRoom?.room.id ? `/api/chats/seeChat/${currentRoom?.room.id}` : ""
+    currentRoom?.room?.id && chatData
+      ? `/api/chats/seeChat/${currentRoom?.room.id}`
+      : ""
   );
 
   const { data: roomData, mutate: boundMutate } = useSWR<RoomData>(
