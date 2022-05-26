@@ -35,22 +35,16 @@ const handler = async (
         id: true,
         rooms: {
           take: pageSize,
-          skip: (+page - 1) * pageSize,
+          ...(page && { skip: (+page - 1) * pageSize }),
           select: {
             id: true,
             createdAt: true,
+            read: true,
             users: {
               select: {
                 id: true,
                 avatar: true,
                 username: true,
-              },
-            },
-            chats: {
-              select: {
-                id: true,
-                payload: true,
-                createdAt: true,
               },
             },
           },

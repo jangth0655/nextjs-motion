@@ -86,6 +86,7 @@ const handler = async (
               },
             },
           });
+
           return res.status(201).json({ ok: true, chat });
         }
       }

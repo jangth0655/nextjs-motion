@@ -61,6 +61,7 @@ model Answer {
   postId Int
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
+  read Boolean @default(false)
 
   @@index([userId])
   @@index([postId])
@@ -85,6 +86,7 @@ model Room {
   updatedAt DateTime @updatedAt
   users User[]
   chats Chat[]
+  read Boolean @default(false)
 }
 
 model Chat { 
@@ -96,8 +98,7 @@ model Chat {
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId Int
   payload String @db.MediumText
-  read Boolean @default(false)
-
+  
   @@index([userId])
   @@index([roomId])
 }

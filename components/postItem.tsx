@@ -79,6 +79,7 @@ const PostItem = ({
 
   const [makeRoom, { data: makeRoomData, loading: makeRoomLoading }] =
     useMutation<RoomMutation>(`/api/chats?userId=${userId}`);
+
   const onSeeProfile = (id: number) => {
     router.push(`/users/${id}/profile`);
   };

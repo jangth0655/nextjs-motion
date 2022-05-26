@@ -27,13 +27,14 @@ interface ChatMutation {
   ok: boolean;
   chat: Chat;
   error?: string;
+  myChat: boolean;
 }
 
 interface ChatWithRoom extends Chat {
   user: User;
 }
 
-interface RoomData {
+export interface RoomData {
   ok: boolean;
   id: number;
   room: {
@@ -48,10 +49,24 @@ interface RoomData {
   };
 }
 
+interface LastChat {
+  ok: boolean;
+  lastChatUserId: number;
+}
+
+interface ConfirmRoomUpdate {
+  ok: boolean;
+  readingChat: {
+    id: number;
+    read: boolean;
+  };
+}
+
 const initialPage = 1;
 const CHAT_SIZE = 10;
 const Chat: NextPage = () => {
   const router = useRouter();
+
   const loggedInUser = useUser();
   const { register, handleSubmit, reset } = useForm<ChatForm>();
   const [chatPage, setChatPage] = useState<number>(1);
@@ -60,7 +75,18 @@ const Chat: NextPage = () => {
     router.query.id && `/api/chats/userRoom/${router.query.id}`
   );
 
-  const { data: roomData, mutate } = useSWR<RoomData>(
+  const [sendMessage, { data: chatData, loading: chatLoading }] =
+    useMutation<ChatMutation>(
+      currentRoom?.room?.id && router.query?.id
+        ? `/api/chats?roomId=${currentRoom?.room?.id}&userId=${router.query?.id}`
+        : ""
+    );
+
+  const { data: chatList } = useSWR<LastChat>(
+    currentRoom?.room.id ? `/api/chats/seeChat/${currentRoom?.room.id}` : ""
+  );
+
+  const { data: roomData, mutate: boundMutate } = useSWR<RoomData>(
     currentRoom?.room?.id
       ? `/api/chats/seeRoom/${currentRoom?.room?.id}?page=${chatPage}`
       : null,
@@ -69,12 +95,21 @@ const Chat: NextPage = () => {
     }
   );
 
-  const [sendMessage, { data: chatData, loading: chatLoading }] =
-    useMutation<ChatMutation>(
-      currentRoom?.room?.id && router.query?.id
-        ? `/api/chats?roomId=${currentRoom?.room?.id}&userId=${router.query?.id}`
-        : ""
-    );
+  const [roomUpdate, { data: roomUpdateData }] = useMutation<ConfirmRoomUpdate>(
+    `/api/chats/seeRoom/${currentRoom?.room?.id}`
+  );
+
+  useEffect(() => {
+    if (chatData && chatData.ok) {
+      roomUpdate({ lastSendUserId: chatData.chat.userId });
+    }
+  }, [chatData]);
+
+  useEffect(() => {
+    if (chatList && chatList?.ok && router.query.loggedInUserId) {
+      roomUpdate({ lastChatUserId: chatList.lastChatUserId });
+    }
+  }, [chatList]);
 
   useEffect(() => {
     if (roomData) {
@@ -85,11 +120,17 @@ const Chat: NextPage = () => {
         router.replace("/");
       }
     }
-  }, [roomData?.room?.users, loggedInUser, router, roomData]);
+  }, [
+    roomData?.room?.users,
+    loggedInUser,
+    router,
+    roomData,
+    currentRoom?.room?.id,
+  ]);
 
   const onValid = (chatPayload: ChatForm) => {
     if (chatLoading) return;
-    mutate(
+    boundMutate(
       (prev) =>
         prev &&
         ({
@@ -120,7 +161,7 @@ const Chat: NextPage = () => {
         )
       : roomData?.room?.chats.length &&
         setChatPage((prev) =>
-          prev > roomData?.room?.chats.length / CHAT_SIZE ? 1 : prev + 1
+          prev > roomData?.room?._count.chats / CHAT_SIZE ? 1 : prev + 1
         );
   };
 

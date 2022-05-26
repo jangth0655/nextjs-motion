@@ -2,20 +2,22 @@ import AvatarSet from "@components/avatarSet";
 import Layout from "@components/layout";
 import PageNation from "@components/pageNation";
 import { withSsrSession } from "@libs/server/withSession";
-import { Chat, Room, User } from "@prisma/client";
+import { Room, User } from "@prisma/client";
 import { NextPage, NextPageContext } from "next";
 import { useState } from "react";
 import useSWR, { SWRConfig } from "swr";
 import client from "@libs/server/client";
 import { useRouter } from "next/router";
 import { dateFormat } from "@components/postSlider";
+import useUser from "@libs/client/useUser";
 
 interface RoomsWithElse extends Room {
   users: User[];
-  chats: Chat[];
+  //chats: Chat[];
+  read: boolean;
 }
 
-interface RoomsData {
+export interface ChatListData {
   ok: boolean;
   rooms: {
     avatar: string;
@@ -33,9 +35,10 @@ const initialPage = 1;
 export const pageSize = 10;
 
 const ChatList: NextPage = () => {
+  const loggedInUser = useUser();
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const { data: roomData } = useSWR<RoomsData>(
+  const { data: roomData } = useSWR<ChatListData>(
     `/api/chats/seeRoom?page=${page}`
   );
 
@@ -75,7 +78,13 @@ const ChatList: NextPage = () => {
   };
 
   const onChat = (id?: number) => {
-    router.push(`/chats/user/${id}`);
+    router.push(
+      {
+        pathname: `/chats/user/${id}`,
+        query: { loggedInUserId: loggedInUser.data?.id },
+      },
+      `/chats/user/${id}`
+    );
   };
 
   return (
@@ -107,7 +116,12 @@ const ChatList: NextPage = () => {
                 onClick={() => onChat(othersUserId(room?.users))}
                 className="flex items-center justify-between h-24 shadow-sm px-4 hover:bg-orange-100 cursor-pointer rounded-sm bg-white"
               >
-                <div className="">
+                <div className="relative">
+                  {room?.read ? null : (
+                    <span className="absolute bg-red-400 w-5 h-5 -left-2  rounded-full -top-3 flex justify-center items-center text-white text-xs">
+                      N
+                    </span>
+                  )}
                   <div className="flex items-center ">
                     <div className="mr-1">
                       <AvatarSet avatar={othersAvatar(room?.users)} />
@@ -116,11 +130,6 @@ const ChatList: NextPage = () => {
                       <div>
                         <span className="text-sm font-bold">
                           {othersUsername(room?.users)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-400">
-                          {room.chats[0]?.payload}
                         </span>
                       </div>
                     </div>
@@ -134,6 +143,7 @@ const ChatList: NextPage = () => {
               </div>
             ))
           ) : (
+            // 채팅방이 없다면...
             <div className="p-4">
               <span className="font-bold text-2xl  text-gray-700">
                 등록된 채팅 방이 없습니다.
@@ -149,7 +159,7 @@ const ChatList: NextPage = () => {
   );
 };
 
-const MyChatPage: NextPage<{ rooms: RoomsData; roomCount: number }> = ({
+const MyChatPage: NextPage<{ rooms: ChatListData; roomCount: number }> = ({
   rooms,
   roomCount,
 }) => {

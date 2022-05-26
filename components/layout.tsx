@@ -24,7 +24,6 @@ interface UserData {
 
 const Layout = ({ children, goBack = false, title, header }: LayoutProps) => {
   const { data: userData } = useSWR<UserData>("/api/users/loginUser");
-
   const router = useRouter();
   const onLogin = () => {
     router.replace("/login");
