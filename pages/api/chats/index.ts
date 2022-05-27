@@ -9,8 +9,8 @@ const handler = async (
 ) => {
   const {
     session: { user },
-    query: { roomId, page = 1 },
-    body: { payload, userId },
+    query: { roomId, page = 1, userId },
+    body: { payload },
   } = req;
 
   try {
