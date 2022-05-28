@@ -98,7 +98,7 @@ const Chat: NextPage = () => {
   );
 
   const [roomUpdate, { data: roomUpdateData }] = useMutation<ConfirmRoomUpdate>(
-    currentRoom?.room.id ? `/api/chats/seeRoom/${currentRoom?.room?.id}` : ""
+    currentRoom?.room?.id ? `/api/chats/seeRoom/${currentRoom?.room?.id}` : ""
   );
 
   useEffect(() => {

@@ -26,6 +26,7 @@ const useMutation = <T>(url: string): MutationResponse<T> => {
           body: JSON.stringify(data),
         })
       ).json();
+      4;
 
       if (!response.ok) {
         setValue((prev) => ({ ...prev, error: response.error }));

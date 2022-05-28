@@ -10,10 +10,8 @@ const handler = async (
   const {
     session: { user },
     query: { roomId, page = 1, userId },
-    body: { payload },
+    body: { payload, otherUserId },
   } = req;
-
-  console.log(req.body);
 
   try {
     if (req.method === "GET") {
@@ -36,9 +34,10 @@ const handler = async (
       // 유저, 룸 있는지 확인
       // 룸이 있으면 메시지를 만들고
       // 없으면 룸을 만들고
+      const otherId = userId ? userId : otherUserId;
       const existsUser = await client.user.findUnique({
         where: {
-          id: +userId,
+          id: +otherId,
         },
         select: {
           id: true,
@@ -53,7 +52,7 @@ const handler = async (
         const room = await client.room.create({
           data: {
             users: {
-              connect: [{ id: +userId }, { id: user?.id }],
+              connect: [{ id: +otherId }, { id: user?.id }],
             },
           },
         });
@@ -75,7 +74,7 @@ const handler = async (
         if (payload) {
           const chat = await client.chat.create({
             data: {
-              payload: JSON.parse(JSON.stringify(payload)),
+              payload,
               user: {
                 connect: {
                   id: user?.id,
