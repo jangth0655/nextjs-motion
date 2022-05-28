@@ -13,6 +13,10 @@ const handler = async (
     body: { payload, otherUserId },
   } = req;
 
+  console.log("userId", userId);
+  console.log("otherUSerId", otherUserId);
+  console.log("roomId", roomId);
+
   try {
     if (req.method === "GET") {
       const pageSize = 5;
@@ -34,7 +38,7 @@ const handler = async (
       // 유저, 룸 있는지 확인
       // 룸이 있으면 메시지를 만들고
       // 없으면 룸을 만들고
-      const otherId = userId ? userId : otherUserId;
+      const otherId = +userId ? +userId : +otherUserId;
       const existsUser = await client.user.findUnique({
         where: {
           id: +otherId,
