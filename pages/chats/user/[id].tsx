@@ -71,12 +71,9 @@ const Chat: NextPage = () => {
   const { register, handleSubmit, reset } = useForm<ChatForm>();
   const [chatPage, setChatPage] = useState<number>(1);
 
-  console.log("routerId", router.query.id);
   const { data: currentRoom } = useSWR<RoomId>(
     router.query.id && `/api/chats/userRoom/${router.query.id}`
   );
-
-  console.log(currentRoom?.room?.id);
 
   const [sendMessage, { data: chatData, loading: chatLoading }] =
     useMutation<ChatMutation>(

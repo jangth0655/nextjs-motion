@@ -13,11 +13,6 @@ const handler = async (
     body: { payload, otherUserId },
   } = req;
 
-  console.log("userId", userId);
-  console.log("otherUSerId", otherUserId);
-  console.log("roomId", roomId);
-  console.log("payload", payload);
-
   try {
     if (req.method === "GET") {
       const pageSize = 5;
