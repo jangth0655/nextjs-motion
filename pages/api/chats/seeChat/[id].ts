@@ -12,8 +12,6 @@ const handler = async (
     query: { id },
   } = req;
 
-  console.log(req.query.id);
-
   try {
     const chatList = await client.chat.findMany({
       where: {

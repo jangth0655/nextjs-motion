@@ -6,7 +6,7 @@ interface MutationState<T> {
   error?: any;
 }
 
-type MutationResponse<T> = [(data?: any) => void, MutationState<T>];
+type MutationResponse<T> = [(data: any) => void, MutationState<T>];
 
 const useMutation = <T>(url: string): MutationResponse<T> => {
   const [value, setValue] = useState<MutationState<T>>({
@@ -14,7 +14,7 @@ const useMutation = <T>(url: string): MutationResponse<T> => {
     data: undefined,
     error: undefined,
   });
-  const mutation = async (data?: any) => {
+  const mutation = async (data: any) => {
     try {
       setValue((prev) => ({ ...prev, loading: true }));
       const response = await (

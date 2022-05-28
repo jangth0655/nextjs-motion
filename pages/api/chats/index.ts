@@ -13,6 +13,8 @@ const handler = async (
     body: { payload },
   } = req;
 
+  console.log(req.body);
+
   try {
     if (req.method === "GET") {
       const pageSize = 5;
@@ -73,7 +75,7 @@ const handler = async (
         if (payload) {
           const chat = await client.chat.create({
             data: {
-              payload: payload ? payload : "",
+              payload: JSON.parse(JSON.stringify(payload)),
               user: {
                 connect: {
                   id: user?.id,
